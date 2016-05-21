@@ -17,7 +17,7 @@ public class MainActivity extends TabActivity {
 
         TabHost.TabSpec ts1 =  tabhost.newTabSpec("PunchPage");
         ts1.setIndicator("Punch");
-        ts1.setContent(new Intent(this,PunchCard.class));
+        ts1.setContent(new Intent(this,Punchcard.class));
         tabhost.addTab(ts1);
         tabhost.setCurrentTab(1);
 

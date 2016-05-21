@@ -17,7 +17,11 @@
         </activity>
         <activity android:name=".Setting" />
         <activity android:name=".Login" />
-        <activity android:name=".Signup"></activity>
+        <activity android:name=".Signup" />
+        <activity android:name=".Punchcard" />
+        <activity android:name=".Friendlist" />
+        <activity android:name=".Rankinglist" />
+        <activity android:name=".Record"></activity>
     </application>
 
 </manifest>
