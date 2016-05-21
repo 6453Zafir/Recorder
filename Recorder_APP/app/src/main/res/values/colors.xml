@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#227f7e</color>
+    <color name="colorPrimaryDark">#213944</color>
+    <color name="colorAccent">#93C571</color>
+
+
+
+    <color name="positiveButton">#93C571</color>
+    <color name="DarkGreenButton">#227f7e</color>
+    <color name="negativeButton">#cb6257</color>
+
+    <color name="whiteBackground">#FFFFFF</color>
+    <color name="lightBackground">#f3f3f3</color>
+    <color name="DarkBackground">#8a9ca0</color>
+
+
+    <color name="whiteText">#FFFFFF</color>
+    <color name="darkText">#8a9ca0</color>
+</resources>
