@@ -24,13 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Setting" />
         <activity android:name=".Login" />
         <activity android:name=".Signup" />
-        <activity android:name=".Punchcard" />
-        <activity android:name=".Friendlist" />
         <activity android:name=".Rankinglist" />
-        <activity android:name=".Record" />
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -47,10 +43,6 @@
             android:name="UMENG_CHANNEL"
             android:value="Channel ID" />
 
-        <activity
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Activity.SettingsActivity"
             android:label="@string/title_activity_settings"

@@ -15,7 +15,7 @@
         android:id="@+id/pager"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="50dp"
+        android:paddingBottom="40dp"
         android:layout_weight="1"/>
     <com.tongji.android.recorder_app.tabs.SlidingTabLayout
         android:id="@+id/tabs"

@@ -42,7 +42,7 @@ public class MainActivity extends ActionBarActivity
 
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
-    private ImageButton imageView;
+    private ImageView imageView;
     private LinearLayout linearLayout;
 
     public void onResume() {
@@ -60,7 +60,7 @@ public class MainActivity extends ActionBarActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        imageView = (ImageButton) findViewById(R.id.avatar);
+        imageView = (ImageView) findViewById(R.id.avatar);
         linearLayout = (LinearLayout) findViewById(R.id.header);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -83,6 +83,7 @@ public class MainActivity extends ActionBarActivity
         mTabs.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         mTabs.setSelectedIndicatorColors(getResources().getColor(R.color.colorAccent));
         mTabs.setCustomTabView(R.layout.custom_tab_view, R.id.tabText);
+
         mTabs.setViewPager(mPager);
     }
 
@@ -130,7 +131,7 @@ public class MainActivity extends ActionBarActivity
         @Override
         public CharSequence getPageTitle(int position) {      //set image and text of the tag
             Drawable drawable=getResources().getDrawable(icons[position]);
-            drawable.setBounds(0,0,80,80);
+            drawable.setBounds(0,0,50,50);
             ImageSpan imageSpan=new ImageSpan(drawable);
             SpannableString spannableString=new SpannableString("fdsfsd");
             spannableString.setSpan(imageSpan,0,spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
