@@ -1,0 +1,69 @@
+<!--<TextView xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/item_detail"-->
+    <!--style="?android:attr/textAppearanceLarge"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+
+    <!--android:padding="16dp"-->
+    <!--android:textIsSelectable="true"-->
+    <!--tools:context=".Fragment.ItemDetailFragment" />-->
+<LinearLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+
+    android:orientation="vertical"
+    android:background="#B0BEC5"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<Button-->
+        <!--android:id="@+id/showCal"-->
+        <!--android:layout_width="40dp"-->
+        <!--xmlns:android="http://schemas.android.com/apk/res/android" android:layout_height="20dp">-->
+
+    <!--</Button>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_gravity="center"
+        android:layout_margin="3dp"
+        android:background="@drawable/card_light_background"
+        >
+        <com.tongji.android.recorder_app.View.RingView
+            android:id="@+id/tensity"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="400dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:layout_gravity="center"
+        android:layout_margin="3dp"
+        android:background="@drawable/card_light_background">
+        <com.github.sundeepk.compactcalendarview.CompactCalendarView xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            tools:context=".Fragment.ItemDetailFragment"
+            android:id="@+id/compactcalendar_view"
+            android:layout_width="match_parent"
+            app:compactCalendarTargetHeight="250dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="10dp"
+            android:layout_height="250dp"
+            app:compactCalendarTextSize="12sp"
+            app:compactCalendarBackgroundColor="@color/lightBackground"
+            app:compactCalendarTextColor="@color/colorPrimaryDark"
+            app:compactCalendarCurrentSelectedDayBackgroundColor="@color/colorPrimary"
+            app:compactCalendarCurrentDayBackgroundColor="@color/colorAccent"
+
+            app:compactCalendarMultiEventIndicatorColor="#0085EF" />
+    </LinearLayout>
+
+
+</LinearLayout>
+

@@ -30,10 +30,10 @@
                 android:id="@+id/nav_set"
                 android:icon="@drawable/ic_settings_black_24dp"
                 android:title="setting" />
-            <item
-                android:id="@+id/Login"
+            <!--<item-->
+                <!--android:id="@+id/Login"-->
 
-                android:title="Log in" />
+                <!--android:title="Log in" />-->
         </menu>
     </item>
 

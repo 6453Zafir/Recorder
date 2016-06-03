@@ -34,6 +34,8 @@ import android.widget.Toast;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.tongji.android.recorder_app.Application.MyApplication;
+import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
 import com.tongji.android.recorder_app.R;
 import com.umeng.analytics.MobclickAgent;
 
@@ -42,6 +44,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -68,12 +71,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-
+    private MyApplication myApp;
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private SharedPreferrenceHelper sh;
 
     public void onResume() {
         super.onResume();
@@ -88,11 +92,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        myApp = (MyApplication)getApplication();
         Toolbar toolbar= (Toolbar) findViewById(R.id.app_bar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         // Set up the login form.
+        sh = new SharedPreferrenceHelper(this);
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
@@ -118,6 +124,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
+        Map<String,String> data = sh.read();
+
+        if(data.get("username")!= null){
+            mEmailView.setText(data.get("username"));
+        }
+
     }
 
     private void populateAutoComplete() {
@@ -179,8 +192,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
-        String password = mPasswordView.getText().toString();
+        final String email = mEmailView.getText().toString();
+        final String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -217,7 +230,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             RequestParams params = new RequestParams();
             params.add("username",email);
             params.add("password",password);
-            client.post("http://1.qiancs.applinzi.com/MyChat/login.php/", params,new AsyncHttpResponseHandler() {
+            client.post("http://qiancs.cn/MyChat/login.php", params,new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onStart() {
@@ -232,10 +245,12 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         JSONObject object = new JSONObject(re);
                         String status = object.getString("status");
                         String nickname = object.getString("nickname");
-                        String phone = object.getString("phone");
+                        //String phone = object.getString("phone");
+                        sh.save(email,password,nickname);
                         if(status.equals("success")){
                             showProgress(false);
                             Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
+                            myApp.setStatus(MyApplication.ONLINE);
                             finish();
                             //Toast.makeText(LoginActivity.this,"登陆成功，欢迎",Toast.LENGTH_SHORT).show();
                         }else {
@@ -252,7 +267,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
                     // called when response HTTP status is "4XX" (eg. 401, 403, 404)
                     showProgress(false);
-                    Toast.makeText(LoginActivity.this,"network error",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this,"network error:"+statusCode,Toast.LENGTH_SHORT).show();
                 }
 
                 @Override
@@ -265,7 +280,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return email.contains("");
     }
 
     private boolean isPasswordValid(String password) {

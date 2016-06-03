@@ -10,9 +10,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -26,8 +29,12 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 
+import com.tongji.android.recorder_app.Application.MyApplication;
+import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
 import com.tongji.android.recorder_app.Fragment.FriendListFragment;
 import com.tongji.android.recorder_app.Fragment.Punchcard;
 import com.tongji.android.recorder_app.Fragment.RankingListFragment;
@@ -35,6 +42,9 @@ import com.tongji.android.recorder_app.Fragment.Record;
 import com.tongji.android.recorder_app.R;
 import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
 import com.umeng.analytics.MobclickAgent;
+
+import java.util.Map;
+import java.util.Objects;
 //import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
 
 public class MainActivity extends ActionBarActivity
@@ -42,8 +52,33 @@ public class MainActivity extends ActionBarActivity
 
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
-    private ImageView imageView;
-    private LinearLayout linearLayout;
+    private Button btn;
+    private NavigationView navigationView;
+    private SharedPreferrenceHelper sh;
+    private TextView nickname;
+    private MyApplication myApp;
+
+    public void setOffline(){
+        myApp.setStatus(MyApplication.OFFLINE);
+        //sh.remove();
+        nickname.setText("请登录");
+        btn.setText("Log in");
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Map<String,String> data = sh.read();
+        if(Objects.equals(data.get("token"),"1")){
+            Log.i("myLog",data.get("nickname"));
+            myApp.setStatus(MyApplication.ONLINE);
+            nickname.setText(data.get("nickname"));
+            btn.setText("Log out");
+        }else {
+            setOffline();
+        }
+
+
+    }
 
     public void onResume() {
         super.onResume();
@@ -57,11 +92,15 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myApp = (MyApplication) getApplication();
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        View v = navigationView.getHeaderView(0);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        sh = new SharedPreferrenceHelper(this);
 
-        imageView = (ImageView) findViewById(R.id.avatar);
-        linearLayout = (LinearLayout) findViewById(R.id.header);
+        nickname = (TextView)v.findViewById(R.id.textView);
+        btn = (Button) v.findViewById(R.id.LogInOutBtn);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -71,7 +110,19 @@ public class MainActivity extends ActionBarActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initTabs();
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(myApp.getStatus() == MyApplication.OFFLINE){
+                    Intent it = new Intent(MainActivity.this,LoginActivity.class);
+                    startActivity(it);
+                }else if(myApp.getStatus() == MyApplication.ONLINE){
+                    sh.remove();
+                    setOffline();
+                }
 
+            }
+        });
     }
 
     public void initTabs(){
@@ -194,10 +245,11 @@ public class MainActivity extends ActionBarActivity
         } else if (id == R.id.nav_set) {
 
         }
-        else if (id == R.id.Login) {
-            Intent it = new Intent(MainActivity.this,LoginActivity.class);
-            startActivity(it);
-        }
+//        else if (id == R.id.Login) {
+//
+//            Intent it = new Intent(MainActivity.this,LoginActivity.class);
+//            startActivity(it);
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

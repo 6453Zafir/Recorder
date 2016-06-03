@@ -17,4 +17,6 @@
 
     <color name="whiteText">#FFFFFF</color>
     <color name="darkText">#8a9ca0</color>
+    <color name="dotColor">#0085EF</color>
+    <color name="circleBackground">#B0BEC5</color>
 </resources>
