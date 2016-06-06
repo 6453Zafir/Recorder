@@ -30,4 +30,8 @@ dependencies {
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'
     compile 'com.github.sundeepk:compact-calendar-view:1.8.4'
+//    compile 'com.snappydb:snappydb-lib:0.5.2'
+//    compile 'com.esotericsoftware.kryo:kryo:2.24.0'
+//    compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'com.colintmiller:simplenosql:0.5.1'
 }

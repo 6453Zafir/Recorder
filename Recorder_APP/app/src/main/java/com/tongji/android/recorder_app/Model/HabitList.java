@@ -13,7 +13,7 @@ public class HabitList {
 
     public static  Map<String, Habit> ITEM_MAP = new HashMap<String, Habit>();
 
-    private static void addItem(Habit item) {
+    public static void addItem(Habit item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }

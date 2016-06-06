@@ -17,6 +17,8 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
 import com.tongji.android.recorder_app.Activity.ItemListActivity;
+import com.tongji.android.recorder_app.Model.Habit;
+import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.R;
 import com.tongji.android.recorder_app.Activity.dummy.DummyContent;
 import com.tongji.android.recorder_app.View.RingView;
@@ -43,7 +45,7 @@ public class ItemDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyContent.DummyItem mItem;
+    private Habit mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,12 +67,12 @@ public class ItemDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = HabitList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
-                appBarLayout.setTitle(mItem.content);
+                appBarLayout.setTitle(mItem.habitName);
             }
         }
     }
@@ -119,11 +121,12 @@ public class ItemDetailFragment extends Fragment {
 
         Date d = new Date(116,5,31);
 
-            currentCalender.setTime(storedDateFromDB);
-            if (month > -1) {
-                currentCalender.set(Calendar.MONTH, month);
-            }
-            currentCalender.add(Calendar.DATE, 1);
+            currentCalender.set(2016,5,5);
+//            currentCalender.setTime(storedDateFromDB);
+//            if (month > -1) {
+//                currentCalender.set(Calendar.MONTH, month);
+//            }
+//            currentCalender.add(Calendar.DATE, 1);
             setToMidnight(currentCalender);
             long timeInMillis = currentCalender.getTimeInMillis();
 

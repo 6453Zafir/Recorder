@@ -47,7 +47,7 @@ public class ItemDetailActivity extends SwipeBackActivity implements AppCompatCa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "分享功能即将开放，敬请期待", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });

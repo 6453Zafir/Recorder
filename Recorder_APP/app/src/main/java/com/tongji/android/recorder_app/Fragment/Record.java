@@ -1,7 +1,10 @@
 package com.tongji.android.recorder_app.Fragment;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -12,10 +15,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
+import com.colintmiller.simplenosql.RetrievalCallback;
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
+import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Activity.dummy.DummyContent;
+import com.tongji.android.recorder_app.Model.Habit;
+import com.tongji.android.recorder_app.Model.HabitList;
+import com.tongji.android.recorder_app.Model.MessageEvent;
 import com.tongji.android.recorder_app.R;
+
 
 import java.util.List;
 
@@ -35,9 +47,18 @@ public class Record extends Fragment {
     private String mParam2;
 
     private boolean mTwoPane;
+    private SimpleItemRecyclerViewAdapter adapter;
+
 
     public Record() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     /**
@@ -58,6 +79,7 @@ public class Record extends Fragment {
         return fragment;
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +88,8 @@ public class Record extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -81,9 +105,12 @@ public class Record extends Fragment {
             }
         });
         View recyclerView = v.findViewById(R.id.item_list);
+        adapter = new SimpleItemRecyclerViewAdapter(HabitList.ITEMS);
+
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-
+        loadDataFromSnappy ld = new loadDataFromSnappy();
+        ld.execute();
         if (v.findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -91,19 +118,84 @@ public class Record extends Fragment {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+        IntentFilter filter = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
+        getActivity().registerReceiver(broadcastReceiver, filter);
         return v;
     }
 
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+            NoSQL.with(getActivity()).using(Habit.class)
+                    .bucketId("habit")
+                    .retrieve(new RetrievalCallback<Habit>() {
+                        @Override
+                        public void retrievedResults(List<NoSQLEntity<Habit>> noSQLEntities) {
+                            for(int i = 0;i<noSQLEntities.size();i++){
+                                Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
+//                                for(int j=0;j<HabitList.ITEMS.size();j++){
+//                                    if(HabitList.ITEMS.get(j).id != currentBean.id){
+                                        HabitList.addItem(currentBean);
+//                                    }
+//                                }
+
+
+
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+
+                    });
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    private class loadDataFromSnappy extends AsyncTask<Void,Void,Void>{
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            adapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            NoSQL.with(getActivity()).using(Habit.class)
+                    .bucketId("habit")
+                    .retrieve(new RetrievalCallback<Habit>() {
+                        @Override
+                        public void retrievedResults(List<NoSQLEntity<Habit>> noSQLEntities) {
+                            for(int i = 0;i<noSQLEntities.size();i++){
+                                Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
+//                                for(int j=0;j<HabitList.ITEMS.size();j++){
+//                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+                                        HabitList.addItem(currentBean);
+//                                    }
+//                                }
+                            }
+                            adapter.notifyDataSetChanged();
+                        }
+
+
+                    });
+
+            return null;
+        }
+    }
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(adapter);
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Habit> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<Habit> items) {
             mValues = items;
         }
 
@@ -111,6 +203,7 @@ public class Record extends Fragment {
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View view = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_list_content, parent, false);
+
             return new ViewHolder(view);
         }
 
@@ -118,7 +211,7 @@ public class Record extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
+            holder.mContentView.setText(mValues.get(position).habitName);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -152,7 +245,7 @@ public class Record extends Fragment {
             public final View mView;
             public final TextView mIdView;
             public final TextView mContentView;
-            public DummyContent.DummyItem mItem;
+            public Habit mItem;
 
             public ViewHolder(View view) {
                 super(view);
@@ -167,5 +260,6 @@ public class Record extends Fragment {
             }
         }
     }
+
 
 }
