@@ -33,6 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.tongji.android.recorder_app.Activity.dummy.Friend;
+import com.tongji.android.recorder_app.Activity.dummy.FriendList;
 import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
 import com.tongji.android.recorder_app.Fragment.FriendListFragment;
@@ -43,6 +45,8 @@ import com.tongji.android.recorder_app.R;
 import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
 import com.umeng.analytics.MobclickAgent;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 //import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
@@ -92,6 +96,7 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        loadRanking();
         myApp = (MyApplication) getApplication();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         View v = navigationView.getHeaderView(0);
@@ -123,6 +128,12 @@ public class MainActivity extends ActionBarActivity
 
             }
         });
+    }
+
+    private void loadRanking() {
+
+
+
     }
 
     public void initTabs(){
@@ -254,5 +265,11 @@ public class MainActivity extends ActionBarActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FriendList.ITEMS.clear();
     }
 }
