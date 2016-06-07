@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose Your Habit"
+        android:gravity="center"
+        android:id="@+id/add_custom_dialog_imageView"
+        android:textAllCaps="false"
+        android:background="#00aaff"
+        android:textColor="#ffffff"
+
+        />
+
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="1dp"
+        android:horizontalSpacing="1dp"
+        android:id="@+id/add_custom_dialog_gridView"
+        android:layout_below="@+id/add_custom_dialog_imageView"
+        android:background="#acacac"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#ffffff"
+        android:id="@+id/add_custom_dialog_textView"
+        android:gravity="center"
+        android:layout_below="@+id/add_custom_dialog_gridView"
+        android:text="Try to add Your own Habit"
+        android:textAllCaps="false"
+        />
+
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Test"
+        android:layout_below="@+id/add_custom_dialog_textView"
+        android:id="@+id/add_custom_dialog_button"
+        android:background="@drawable/punch_card_add_custom_dialog_button"
+        />
+
+</RelativeLayout>
