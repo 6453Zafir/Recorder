@@ -15,6 +15,7 @@ public class HabitList {
 
     public static void addItem(Habit item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.habitName, item);
     }
+
 }

@@ -47,6 +47,7 @@ import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.Model.MessageEvent;
+import com.tongji.android.recorder_app.Model.SystemHabitList;
 import com.tongji.android.recorder_app.R;
 import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
 import com.umeng.analytics.MobclickAgent;
@@ -155,6 +156,7 @@ public class MainActivity extends ActionBarActivity
         });
         
        // initDB();
+
     }
 
     @Override
