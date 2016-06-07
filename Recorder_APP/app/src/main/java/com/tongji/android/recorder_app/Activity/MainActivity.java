@@ -42,6 +42,8 @@ import com.tongji.android.recorder_app.Fragment.FriendListFragment;
 import com.tongji.android.recorder_app.Fragment.Punchcard;
 import com.tongji.android.recorder_app.Fragment.RankingListFragment;
 import com.tongji.android.recorder_app.Fragment.Record;
+import com.tongji.android.recorder_app.Model.DateItem;
+import com.tongji.android.recorder_app.Model.DateList;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.Model.Habit;
@@ -53,9 +55,11 @@ import com.umeng.analytics.MobclickAgent;
 
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 //import com.tongji.android.recorder_app.tabs.SlidingTabLayout;
@@ -122,7 +126,7 @@ public class MainActivity extends ActionBarActivity
         sh = new SharedPreferrenceHelper(this);
         Map<String,String> data = sh.read();
         if(Objects.equals(data.get("token"),"1")){
-            initDB();
+            loadFromDb();
         }
 
         nickname = (TextView)v.findViewById(R.id.textView);
@@ -147,7 +151,9 @@ public class MainActivity extends ActionBarActivity
                     NoSQL.with(MainActivity.this).using(Habit.class)
                             .bucketId("habit")
                             .delete();
-
+                    NoSQL.with(MainActivity.this).using(DateItem.class)
+                            .bucketId("date")
+                            .delete();
                     setOffline();
                 }
 
@@ -165,7 +171,7 @@ public class MainActivity extends ActionBarActivity
             if(Objects.equals(d.get("token"),"1")) {
                 //Toast.makeText(this,"正在更新习惯",Toast.LENGTH_SHORT).show();
                 getDataFromServer();
-                initDB();
+                initDB(0);
 
 
             }
@@ -178,25 +184,54 @@ public class MainActivity extends ActionBarActivity
     }
 
     //模拟习惯数据
-    private void initDB() {
-        List<Date> dateList = new ArrayList<Date>();
-        dateList.add(new Date());
-        Habit h1= new Habit(1+"","早睡",12,1);
-        Habit h2= new Habit(2+"","做作业",12,2);
-        Habit h3= new Habit(3+"","健身",33,3);
+    private void initDB(int status) {
+
+        Calendar c =  Calendar.getInstance(Locale.getDefault());
+        Habit h1= new Habit(1,"早睡",12,1);
+        DateItem dateitem = new DateItem(h1.type,h1.id);
+        c.set(2016,6,4);
+        dateitem.addDate(c.getTime());
+        c.set(2016,6,3);
+        dateitem.addDate(c.getTime());
+
+        DateList.addItem(1, dateitem);
+        Habit h2= new Habit(2,"做作业",12,2);
+        DateItem dateitem2 = new DateItem(h2.type,h2.id);
+        c.set(2016,6,2);
+        dateitem2.addDate(c.getTime());
+
+        c.set(2016,6,1);
+        dateitem2.addDate(c.getTime());
+        DateList.addItem(2, dateitem2);
+        Habit h3= new Habit(3,"健身",33,3);
+        DateItem dateitem3 = new DateItem(h3.type,h3.id);
+        c.set(2016,6,6);
+        dateitem3.addDate(c.getTime());
+
+        c.set(2016,6,7);
+        dateitem3.addDate(c.getTime());
+        DateList.addItem(3, dateitem3);
         Habit[] h = new Habit[]{h1,h2,h3};
+        DateItem[] d =new DateItem[]{dateitem,dateitem2,dateitem3};
+        //Toast.makeText(this, DateList.ITEMS.get(0).getDate(0).getYear()+"",Toast.LENGTH_SHORT).show();
         Friend f = new Friend("13333333","zhangjunyi",82);
         FriendList.addItem(f);
         NoSQLEntity<Friend> friend = new NoSQLEntity<Friend>("friend",f.phoneNumber);
         friend.setData(f);
         NoSQL.with(this).using(Friend.class).save(friend);
-        //HabitList.addItem(h1);
-//        HabitList.addItem(h2);
-//        HabitList.addItem(h3);
+        HabitList.addItem(h1);
+        HabitList.addItem(h2);
+        HabitList.addItem(h3);
         for(int i =0;i<h.length;i++){
             NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h[i].id+"");
             entity.setData(h[i]);
             NoSQL.with(this).using(Habit.class).save(entity);
+        }
+        
+        for(int i =0;i<d.length;i++){
+            NoSQLEntity<DateItem> entity = new NoSQLEntity<DateItem>("date",d[i].type+"+"+d[i].id);
+            entity.setData(d[i]);
+            NoSQL.with(this).using(DateItem.class).save(entity);
         }
         Intent intent = new Intent(RELOAD_DATA_FRAGMENT);
 
@@ -206,6 +241,47 @@ public class MainActivity extends ActionBarActivity
 
         //Toast.makeText(this,firstBean.habitName,Toast.LENGTH_SHORT).show();
 
+    }
+    private void loadFromDb(){
+        NoSQL.with(this).using(DateItem.class)
+                .bucketId("date")
+                .retrieve(new RetrievalCallback<DateItem>() {
+                    @Override
+                    public void retrievedResults(List<NoSQLEntity<DateItem>> noSQLEntities) {
+                        for(int i = 0;i<noSQLEntities.size();i++){
+                            DateItem currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
+//                                for(int j=0;j<HabitList.ITEMS.size();j++){
+//                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+                            DateList.addItem(currentBean.type,currentBean);
+//                                    }
+//                                }
+                        }
+
+                    }
+
+
+                });
+        NoSQL.with(this).using(Habit.class)
+                .bucketId("habit")
+                .retrieve(new RetrievalCallback<Habit>() {
+                    @Override
+                    public void retrievedResults(List<NoSQLEntity<Habit>> noSQLEntities) {
+                        for(int i = 0;i<noSQLEntities.size();i++){
+                            Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
+//                                for(int j=0;j<HabitList.ITEMS.size();j++){
+//                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+                            HabitList.addItem(currentBean);
+//                                    }
+//                                }
+                        }
+                        //adapter.notifyDataSetChanged();
+                    }
+
+
+                });
+        Intent intent = new Intent(RELOAD_DATA_FRAGMENT);
+
+        sendBroadcast(intent);
     }
 
     public void initTabs(){

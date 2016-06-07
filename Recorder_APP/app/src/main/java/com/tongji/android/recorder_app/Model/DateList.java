@@ -15,28 +15,26 @@ public class DateList {
     public static Map<Integer, DateItem> ITEM_MAP = new HashMap<Integer, DateItem>();
 
     public static void addItem(int type,DateItem item) {
-        if(type == 0){
+//        if(type == 0){
 
             ITEMS.add(item);
             ITEM_MAP.put(item.type, item);
-        }
+//        }else if(type==1){
+//            ITEMS.add(item);
+//            ITEM_MAP.put(item.type, item);
+//        }
+//        else if(type==2){
+//            ITEMS.add(item);
+//            ITEM_MAP.put(item.type, item);
+//        }
+//        else if(type==3){
+//            ITEMS.add(item);
+//            ITEM_MAP.put(item.type, item);
+//        }else {
+//
+//        }
 
     }
 
-    public static class DateItem  {
-        public int type;
-        public int id;
-        public Date date;
 
-
-
-        public DateItem(int type,int id, Date date) {
-            this.id = id;
-
-            this.type=type;
-            this.date = date;
-        }
-
-
-    }
 }

@@ -13,10 +13,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
+import com.colintmiller.simplenosql.RetrievalCallback;
 import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
 import com.tongji.android.recorder_app.Activity.ItemListActivity;
+import com.tongji.android.recorder_app.Model.DateItem;
+import com.tongji.android.recorder_app.Model.DateList;
 import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.R;
@@ -28,6 +33,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -41,11 +47,13 @@ public class ItemDetailFragment extends Fragment {
      * represents.
      */
     public static final String ARG_ITEM_ID = "item_id";
+    public static final String ARG_ITEM_TYPE = "item_type";
 
     /**
      * The dummy content this fragment is presenting.
      */
     private Habit mItem;
+    private DateItem dateItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,7 +75,24 @@ public class ItemDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = HabitList.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            int type = getArguments().getInt(ARG_ITEM_TYPE);
+            int id = getArguments().getInt(ARG_ITEM_ID);
+
+            for(int i =0;i< DateList.ITEMS.size();i++){
+                if(id==DateList.ITEMS.get(i).id && type == DateList.ITEMS.get(i).type){
+                    dateItem = DateList.ITEMS.get(i);
+                    break;
+                }
+            }
+
+
+            for(int i =0;i< HabitList.ITEMS.size();i++){
+                if(id==HabitList.ITEMS.get(i).id && type == HabitList.ITEMS.get(i).type){
+                    mItem = HabitList.ITEMS.get(i);
+                    break;
+                }
+            }
+
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
@@ -83,7 +108,25 @@ public class ItemDetailFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.item_detail, container, false);
 
         ringView= (RingView) rootView.findViewById(R.id.tensity);
-        ringView.setPercentage((float) 0.23);
+        float intensity = 0;
+        Calendar c =  Calendar.getInstance(Locale.getDefault());
+        Date d = new Date();
+        c.set(2016,6,d.getDate());
+        for(int i = dateItem.getDateSize()-1;i>=0;i--) {
+
+            Date storedDateFromDB = dateItem.getDate(i);
+
+            long mili = c.getTime().getTime()-storedDateFromDB.getTime();
+            long offset = TimeUnit.MILLISECONDS.toDays(mili);
+            if(offset>=0 && offset<=7){
+                intensity++;
+            }else {
+                break;
+            }
+        }
+        float intensity_per = intensity/7;
+        //Toast.makeText(getActivity(),intensity+" "+intensity_per+" ",Toast.LENGTH_SHORT).show();
+        ringView.setPercentage(intensity_per);
         ringView.setColor(R.color.colorPrimaryDark);
 
         final CompactCalendarView compactCalendarView = (CompactCalendarView) rootView.findViewById(R.id.compactcalendar_view);
@@ -91,9 +134,8 @@ public class ItemDetailFragment extends Fragment {
         compactCalendarView.setUseThreeLetterAbbreviation(true);
 
 
-        addEvents(compactCalendarView, Calendar.JUNE);
-        addEvents(compactCalendarView, Calendar.DECEMBER);
-        addEvents(compactCalendarView, Calendar.AUGUST);
+        addEvents(compactCalendarView, dateItem);
+
         compactCalendarView.invalidate();
 
 
@@ -114,25 +156,27 @@ public class ItemDetailFragment extends Fragment {
 
         return rootView;
     }
-    private void addEvents(CompactCalendarView compactCalendarView, int month) {
+    private void addEvents(CompactCalendarView compactCalendarView, DateItem dateItem) {
 //        currentCalender.setTime(new Date());
 //        currentCalender.set(Calendar.DAY_OF_MONTH, 1);
-        Date storedDateFromDB = currentCalender.getTime();
+        for(int i = 0;i<dateItem.getDateSize();i++){
+            Date storedDateFromDB = dateItem.getDate(i);
 
-        Date d = new Date(116,5,31);
+            int day = storedDateFromDB.getDate();
+            int mo = storedDateFromDB.getMonth()-1;
+            int year = storedDateFromDB.getYear()+1900;
 
-            currentCalender.set(2016,5,5);
-//            currentCalender.setTime(storedDateFromDB);
-//            if (month > -1) {
-//                currentCalender.set(Calendar.MONTH, month);
-//            }
-//            currentCalender.add(Calendar.DATE, 1);
+            currentCalender.set(year,mo,day);
+            //currentCalender.setTime(storedDateFromDB);
+
             setToMidnight(currentCalender);
             long timeInMillis = currentCalender.getTimeInMillis();
 
             List<Event> events = getEvents(timeInMillis, 1);
 
             compactCalendarView.addEvents(events);
+        }
+
 
     }
     private List<Event> getEvents(long timeInMillis, int day) {

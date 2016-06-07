@@ -87,6 +87,8 @@ public class Record extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+//        loadDataFromSnappy ld = new loadDataFromSnappy();
+//        ld.execute();
     }
 
 
@@ -109,8 +111,7 @@ public class Record extends Fragment {
 
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
-        loadDataFromSnappy ld = new loadDataFromSnappy();
-        ld.execute();
+
         if (v.findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
@@ -128,27 +129,7 @@ public class Record extends Fragment {
         @Override
         public void onReceive(Context context, Intent intent) {
             // TODO Auto-generated method stub
-            NoSQL.with(getActivity()).using(Habit.class)
-                    .bucketId("habit")
-                    .retrieve(new RetrievalCallback<Habit>() {
-                        @Override
-                        public void retrievedResults(List<NoSQLEntity<Habit>> noSQLEntities) {
-                            for(int i = 0;i<noSQLEntities.size();i++){
-                                Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
-//                                for(int j=0;j<HabitList.ITEMS.size();j++){
-//                                    if(HabitList.ITEMS.get(j).id != currentBean.id){
-                                        HabitList.addItem(currentBean);
-//                                    }
-//                                }
 
-
-
-                            }
-                            adapter.notifyDataSetChanged();
-                        }
-
-
-                    });
             adapter.notifyDataSetChanged();
         }
     };
@@ -182,6 +163,7 @@ public class Record extends Fragment {
 
                     });
 
+
             return null;
         }
     }
@@ -210,7 +192,7 @@ public class Record extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
+            holder.mIdView.setText(mValues.get(position).id+"");
             holder.mContentView.setText(mValues.get(position).habitName);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -218,7 +200,7 @@ public class Record extends Fragment {
                 public void onClick(View v) {
                     if (mTwoPane) {
                         Bundle arguments = new Bundle();
-                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
+                        arguments.putString(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id+"");
                         ItemDetailFragment fragment = new ItemDetailFragment();
                         fragment.setArguments(arguments);
                         getActivity().getSupportFragmentManager().beginTransaction()
@@ -228,7 +210,8 @@ public class Record extends Fragment {
                         Context context = v.getContext();
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
-
+                        intent.putExtra(ItemDetailFragment.ARG_ITEM_TYPE, holder.mItem.type);
+                       // Toast.makeText(getActivity(),holder.mItem.id+" "+holder.mItem.type,Toast.LENGTH_SHORT).show();
                         context.startActivity(intent);
 
                     }
