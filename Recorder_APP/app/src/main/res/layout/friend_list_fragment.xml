@@ -2,12 +2,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="Fragment.FriendListFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/frameLayout"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="match_parent"-->
+            <!--app:layout_behavior="@string/appbar_scrolling_view_behavior">-->
+    <!---->
+            <!--<include layout="@layout/item_list" />-->
+        <!--</LinearLayout>-->
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:weightSum="1"
+            android:paddingTop="10dp"
+            android:paddingLeft="16dp"
+            android:background="@color/accent_material_dark">
+
+            <EditText
+                android:id="@+id/friend_number"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:inputType="numberSigned"
+                android:ems="10"
+                android:layout_weight="0.8"
+                android:hint="phone number to search"
+                android:textColor="#7b7b7b"
+                android:textColorHighlight="#a7a7a7"
+                android:background="@drawable/search_radious"
+                android:paddingLeft="10dp"
+                android:textSize="15sp" />
+
+            <Button
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:text="Search"
+                android:id="@+id/friend_search"
+                android:layout_weight="0.2"
+                android:textSize="15sp"
+                android:background="#00ffffff" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:id="@+id/frameLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:weightSum="1"
+            android:baselineAligned="false">
+
+        <include layout="@layout/item_friend_list"
+            android:layout_weight="5.34"
+            android:layout_width="0dp"
+            android:layout_height="fill_parent" />
+        </LinearLayout>
+    </LinearLayout>
 
 </FrameLayout>
