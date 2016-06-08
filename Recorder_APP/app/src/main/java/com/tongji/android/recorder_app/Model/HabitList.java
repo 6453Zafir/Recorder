@@ -11,10 +11,11 @@ import java.util.Map;
 public class HabitList {
     public static  List<Habit> ITEMS = new ArrayList<Habit>();
 
-    public static  Map<String, Habit> ITEM_MAP = new HashMap<String, Habit>();
+    public static  Map<Integer, Habit> ITEM_MAP = new HashMap<Integer, Habit>();
 
-    private static void addItem(Habit item) {
+    public static void addItem(Habit item) {
         ITEMS.add(item);
         ITEM_MAP.put(item.id, item);
     }
+
 }
