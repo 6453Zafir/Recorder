@@ -251,6 +251,17 @@ public class MainActivity extends ActionBarActivity
 
     }
     private void loadFromDb(){
+        HabitList.ITEMS.clear();
+        HabitList.ITEM_MAP.clear();
+        DateList.ITEMS.clear();
+        DateList.ITEM_MAP.clear();
+        FriendList.ITEMS.clear();
+
+        FriendList.ITEM_MAP.clear();
+        for(int i=0;i<10;i++){
+            Friend f = new Friend("15316373836"+i,"张君义"+i,(int)(Math.random()*100)+1);
+            FriendList.addItem(f);
+        }
         NoSQL.with(this).using(DateItem.class)
                 .bucketId("date")
                 .retrieve(new RetrievalCallback<DateItem>() {

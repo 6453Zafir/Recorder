@@ -1,5 +1,7 @@
 package com.tongji.android.recorder_app.Activity.dummy;
 
+import com.tongji.android.recorder_app.Model.Friend;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

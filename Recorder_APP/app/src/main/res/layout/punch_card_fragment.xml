@@ -2,21 +2,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="5dp"
+    android:paddingRight="5dp"
     tools:context="com.tongji.android.recorder_app.Fragment.Punchcard">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+
 
     <GridView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:numColumns="auto_fit"
         android:id="@+id/punch_card_main_habit_gridView"
-        android:layout_marginTop="30dp"
-        ></GridView>
+        android:layout_marginTop="3dp"
+        android:horizontalSpacing="5dp"
+        android:verticalSpacing="5dp"
+        />
 
     <android.support.design.widget.FloatingActionButton
     android:id="@+id/fab"

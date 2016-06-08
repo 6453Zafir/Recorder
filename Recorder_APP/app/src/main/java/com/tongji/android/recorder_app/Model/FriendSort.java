@@ -1,6 +1,6 @@
 package com.tongji.android.recorder_app.Model;
 
-import com.tongji.android.recorder_app.Activity.dummy.Friend;
+
 
 import java.util.Comparator;
 
@@ -14,4 +14,6 @@ public class FriendSort implements Comparator<Friend>{
         else if(lhs.score<rhs.score) return 1;
         else return 0;
     }
+
+
 }

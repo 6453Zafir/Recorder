@@ -22,7 +22,7 @@
                     android:layout_width="100dp"
                     android:layout_height="100dp"
                     android:layout_gravity="center_horizontal"
-                    android:background="@drawable/medal_icon"
+                    android:background="@drawable/first"
 
                     android:layout_marginTop="5dp" />
             </FrameLayout>

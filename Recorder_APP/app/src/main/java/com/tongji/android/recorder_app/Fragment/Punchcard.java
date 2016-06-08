@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,9 +19,11 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dd.CircularProgressButton;
 import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.Model.SystemDefaultHabit;
@@ -88,6 +91,7 @@ public class Punchcard extends Fragment {
 
         GridView gridView = (GridView) view.findViewById(R.id.punch_card_main_habit_gridView);
         final PuncuGridViewAdapter puncuGridViewAdapter = new PuncuGridViewAdapter(getActivity());
+
         gridView.setAdapter(puncuGridViewAdapter);
 
 
@@ -243,7 +247,19 @@ public class Punchcard extends Fragment {
             Habit currentHabit = HabitList.ITEMS.get(position);
             TextView textView = (TextView) convertView.findViewById(R.id.punch_card_main_habit_textView);
             textView.setText(currentHabit.habitName);
-
+            final CircularProgressButton circularButton1 = (CircularProgressButton) convertView.findViewById(R.id.punch_card_main_habit_button_punch);
+            circularButton1.setIdleText(getResources().getString(R.string.check));
+//            circularButton1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            circularButton1.setCompleteText("checked");
+            circularButton1.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (circularButton1.getProgress() == 0) {
+                        circularButton1.setIndeterminateProgressMode(true);
+                        circularButton1.setProgress(50);
+                    }
+                }
+            });
             return convertView;
         }
     }

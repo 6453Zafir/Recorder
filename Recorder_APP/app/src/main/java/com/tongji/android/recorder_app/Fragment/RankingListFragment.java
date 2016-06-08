@@ -1,8 +1,6 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -12,15 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
-import com.tongji.android.recorder_app.Activity.ItemListActivity;
-import com.tongji.android.recorder_app.Activity.dummy.DummyContent;
-import com.tongji.android.recorder_app.Activity.dummy.Friend;
+
 import com.tongji.android.recorder_app.Activity.dummy.FriendList;
+import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendSort;
 import com.tongji.android.recorder_app.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,26 +90,23 @@ public class RankingListFragment extends Fragment {
         TextView thirdName = (TextView) v.findViewById(R.id.thirdName);
         TextView thirdScore = (TextView) v.findViewById(R.id.thirdScore);
         List<Friend> friends = new ArrayList<Friend>();
-        for(int i=0;i<10;i++){
-            Friend f = new Friend("15316373836"+i,"张君义"+i,(int)(Math.random()*100)+1);
-            friends.add(f);
-        }
-        Collections.sort(friends,new FriendSort());
-        for (int i=0;i<friends.size();i++){
+
+        Collections.sort(com.tongji.android.recorder_app.Model.FriendList.ITEMS,new FriendSort());
+        for (int i = 0; i< com.tongji.android.recorder_app.Model.FriendList.ITEMS.size(); i++){
             if (i == 0){
-                firstName.setText(friends.get(0).username);
-                firstScore.setText(friends.get(0).score+"");
+                firstName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).username);
+                firstScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).score+"");
             }
             else if(i == 1){
-                secondName.setText(friends.get(1).username);
-                secondScore.setText(friends.get(1).score+"");
+                secondName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).username);
+                secondScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).score+"");
             }
             else if (i == 2){
-                thirdName.setText(friends.get(2).username);
-                thirdScore.setText(friends.get(2).score+"");
+                thirdName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).username);
+                thirdScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).score+"");
             }
             else {
-                FriendList.addItem(friends.get(i));
+                FriendList.addItem(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(i));
             }
         }
 
@@ -187,5 +178,12 @@ public class RankingListFragment extends Fragment {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEMS.clear();
+        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEM_MAP.clear();
     }
 }
