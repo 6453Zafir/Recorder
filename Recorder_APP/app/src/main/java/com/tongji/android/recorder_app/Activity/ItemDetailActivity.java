@@ -47,7 +47,7 @@ public class ItemDetailActivity extends SwipeBackActivity implements AppCompatCa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "分享功能即将开放，敬请期待", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -72,8 +72,10 @@ public class ItemDetailActivity extends SwipeBackActivity implements AppCompatCa
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
+            arguments.putInt(ItemDetailFragment.ARG_ITEM_ID,
+                    getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID,0));
+            arguments.putInt(ItemDetailFragment.ARG_ITEM_TYPE,
+                    getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_TYPE,0));
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()

@@ -5,9 +5,214 @@
     tools:context="Fragment.RankingListFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="150dp"
+        android:orientation="vertical"
+        android:background="@color/DarkGreenButton">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/medal_icon"
+                    android:layout_width="100dp"
+                    android:layout_height="100dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/first"
+
+                    android:layout_marginTop="5dp" />
+            </FrameLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/FirstName"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="Juny1"
+                android:textColor="#ffffff"
+                android:gravity="center_vertical|right"
+                />
+            <TextView
+                android:id="@+id/firstScore"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="100"
+                android:textColor="#ffffff"
+                android:gravity="center_vertical|right"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+
+
+<LinearLayout
+    android:id="@+id/secondT"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="150dp"
+    android:orientation="horizontal">
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.5"
+        android:orientation="vertical"
+        android:background="#80CBC4">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/second"
+                    android:layout_marginTop="5dp" />
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/secondName"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="thatGirl"
+                android:textColor="#000000"
+                android:gravity="center_vertical|right"
+                />
+            <TextView
+                android:id="@+id/secondScore"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="99"
+                android:textColor="#000000"
+                android:background="@null"
+                android:editable="false"
+                />
+        </LinearLayout>
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_weight="0.5"
+        android:orientation="vertical"
+        android:background="#E0F2F1">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/third"
+                    android:layout_marginTop="5dp" />
+            </FrameLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/thirdName"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="qiancs"
+                android:textColor="#000000"
+                android:gravity="center_vertical|right"
+                />
+            <TextView
+                android:id="@+id/thirdScore"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.5"
+                android:textAlignment="center"
+                android:text="000"
+                android:textColor="#000000"
+                android:background="@null"
+                android:editable="false"
+                />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="250dp"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.4"
+            android:textAlignment="center"
+            android:text="手 机 号"
+            android:textSize="15dp"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:textAlignment="center"
+            android:text="昵  称"
+            android:textSize="15dp"
+        />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="0.3"
+            android:textAlignment="center"
+            android:textSize="15dp"
+            android:text="分  数"/>
+
+
+    </LinearLayout>
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="280dp">
+    <include
+        layout="@layout/ranking_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        />
+
+</LinearLayout>
 
 </FrameLayout>
