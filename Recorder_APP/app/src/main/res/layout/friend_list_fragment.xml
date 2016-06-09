@@ -27,7 +27,7 @@
             android:weightSum="1"
             android:paddingTop="10dp"
             android:paddingLeft="16dp"
-            android:background="@color/accent_material_dark">
+            android:background="@color/lightBackground">
 
             <EditText
                 android:id="@+id/friend_number"

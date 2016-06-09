@@ -20,7 +20,9 @@ import android.widget.TextView;
 
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
 import com.tongji.android.recorder_app.Activity.ItemListActivity;
-import com.tongji.android.recorder_app.Activity.dummy.DummyContent;
+
+import com.tongji.android.recorder_app.Model.Friend;
+import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.R;
 
 import java.util.List;
@@ -161,15 +163,15 @@ public class FriendListFragment extends Fragment {
         return v;
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(DummyContent.ITEMS));
+        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(FriendList.ITEMS));
     }
 
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
-        private final List<DummyContent.DummyItem> mValues;
+        private final List<Friend> mValues;
 
-        public SimpleItemRecyclerViewAdapter(List<DummyContent.DummyItem> items) {
+        public SimpleItemRecyclerViewAdapter(List<Friend> items) {
             mValues = items;
         }
 
@@ -183,9 +185,10 @@ public class FriendListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id);
-            holder.mContentView.setText(mValues.get(position).content);
-            holder.mScoreView.setText(mValues.get(position).);
+            holder.mIdView.setText(mValues.get(position).phoneNumber);
+            holder.mContentView.setText(mValues.get(position).username);
+//
+
 
         }
 
@@ -199,7 +202,7 @@ public class FriendListFragment extends Fragment {
             public final TextView mIdView;
             public final TextView mContentView;
             public final TextView mScoreView;
-            public DummyContent.DummyItem mItem;
+            public Friend mItem;
 
             public ViewHolder(View view) {
                 super(view);
