@@ -17,15 +17,26 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
 import com.tongji.android.recorder_app.Activity.ItemListActivity;
 
+import com.tongji.android.recorder_app.Activity.MainActivity;
+import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.R;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -77,7 +88,8 @@ public class FriendListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
+        Friend f = new Friend("fdsfs","fdsfsd",88);
+        FriendList.addItem(f);
     }
 
     @Override
@@ -98,38 +110,89 @@ public class FriendListFragment extends Fragment {
                 phoneNum = FriendPhoneNum.getText().toString();
                 if(!phoneNum.isEmpty()){
                     // call the ifFriendExist function
-                    if (isFriendExist){
-                        builder = new AlertDialog.Builder(getActivity());
-                        alert = builder.setIcon(R.drawable.success)
-                                .setTitle("Adding Friends")
-                                .setMessage("Are you sure you want to add "+phoneNum)
-                                .setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                })
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                }).create();
-                        alert.show();
-                    }else {
-                        builder = new AlertDialog.Builder(getActivity());
-                        alert = builder.setIcon(R.drawable.error)
-                                .setTitle("Sorry：")
-                                .setMessage("he phone number "+phoneNum+" haven't register")
-
-                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-
-                                    }
-                                }).create();
-                        alert.show();
-                    }
+//                    AsyncHttpClient client = new AsyncHttpClient();
+//                    RequestParams params = new RequestParams();
+//                    params.add("username",email);
+//                    params.add("password",password);
+//                    client.post("http://qiancs.cn/MyChat/login.php", params,new AsyncHttpResponseHandler() {
+//
+//                        @Override
+//                        public void onStart() {
+//                            // called before request is started
+//                        }
+//
+//                        @Override
+//                        public void onSuccess(int statusCode, Header[] headers, byte[] response) {
+//                            // called when response HTTP status is "200 OK"
+//                            String re = new String(response);
+//                            try {
+//                                JSONObject object = new JSONObject(re);
+//                                String status = object.getString("status");
+//                                String nickname = object.getString("nickname");
+//                                //String phone = object.getString("phone");
+//                                sh.save(email,password,nickname);
+//                                if(status.equals("success")){
+//                                    showProgress(false);
+//                                    Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
+//                                    myApp.setStatus(MyApplication.ONLINE);
+//                                    Intent it = new Intent(LoginActivity.this,MainActivity.class);
+//                                    setResult(MainActivity.PREPARE_DATE_AFTER_LOGIN,it);
+//                                    finish();
+//                                    //Toast.makeText(LoginActivity.this,"登陆成功，欢迎",Toast.LENGTH_SHORT).show();
+//                                }else {
+//                                    showProgress(false);
+//                                    Toast.makeText(LoginActivity.this,"用户名或密码错误",Toast.LENGTH_SHORT).show();
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//
+//                        }
+//
+//                        @Override
+//                        public void onFailure(int statusCode, Header[] headers, byte[] errorResponse, Throwable e) {
+//                            // called when response HTTP status is "4XX" (eg. 401, 403, 404)
+//                            showProgress(false);
+//                            Toast.makeText(LoginActivity.this,"network error:"+statusCode,Toast.LENGTH_SHORT).show();
+//                        }
+//
+//                        @Override
+//                        public void onRetry(int retryNo) {
+//                            // called when request is retried
+//                        }
+//                    });
+//                    if (isFriendExist){
+//                        builder = new AlertDialog.Builder(getActivity());
+//                        alert = builder.setIcon(R.drawable.success)
+//                                .setTitle("Adding Friends")
+//                                .setMessage("Are you sure you want to add "+phoneNum)
+//                                .setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                    }
+//                                })
+//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                    }
+//                                }).create();
+//                        alert.show();
+//                    }else {
+//                        builder = new AlertDialog.Builder(getActivity());
+//                        alert = builder.setIcon(R.drawable.error)
+//                                .setTitle("Sorry：")
+//                                .setMessage("he phone number "+phoneNum+" haven't register")
+//
+//                                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+//                                    @Override
+//                                    public void onClick(DialogInterface dialog, int which) {
+//
+//                                    }
+//                                }).create();
+//                        alert.show();
+//                    }
                 }else{
                     builder = new AlertDialog.Builder(getActivity());
                     alert = builder.setIcon(R.drawable.error)
@@ -187,6 +250,7 @@ public class FriendListFragment extends Fragment {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).phoneNumber);
             holder.mContentView.setText(mValues.get(position).username);
+            holder.mScoreView.setText(mValues.get(position).score+"");
 //
 
 

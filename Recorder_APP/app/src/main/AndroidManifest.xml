@@ -20,7 +20,8 @@
         android:theme="@style/AppThemeMain">
         <activity
             android:name=".Activity.MainActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
