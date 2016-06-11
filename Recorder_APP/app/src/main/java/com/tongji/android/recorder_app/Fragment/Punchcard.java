@@ -6,7 +6,12 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
+import android.support.annotation.ColorRes;
+import android.support.annotation.DimenRes;
+import android.support.annotation.IntegerRes;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -23,7 +28,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.dd.CircularProgressButton;
+
+import com.dd.morphingbutton.MorphingButton;
+import com.dd.morphingbutton.impl.IndeterminateProgressButton;
+import com.dd.morphingbutton.impl.LinearProgressButton;
 import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.Model.SystemDefaultHabit;
@@ -48,6 +56,17 @@ public class Punchcard extends Fragment {
 
     public Punchcard() {
         // Required empty public constructor
+    }
+    public int dimen(@DimenRes int resId) {
+        return (int) getResources().getDimension(resId);
+    }
+
+    public int color(@ColorRes int resId) {
+        return getResources().getColor(resId);
+    }
+
+    public int integer(@IntegerRes int resId) {
+        return getResources().getInteger(resId);
     }
 
     /**
@@ -219,7 +238,7 @@ public class Punchcard extends Fragment {
 
         private LayoutInflater inflater;
         private Context context;
-
+        private int mMorphCounter1 = 1;
         public PuncuGridViewAdapter (Context context) {
             this.inflater = LayoutInflater.from(context);
             this.context = context;
@@ -247,21 +266,106 @@ public class Punchcard extends Fragment {
             Habit currentHabit = HabitList.ITEMS.get(position);
             TextView textView = (TextView) convertView.findViewById(R.id.punch_card_main_habit_textView);
             textView.setText(currentHabit.habitName);
-            final CircularProgressButton circularButton1 = (CircularProgressButton) convertView.findViewById(R.id.punch_card_main_habit_button_punch);
-            circularButton1.setIdleText(getResources().getString(R.string.check));
-//            circularButton1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-            circularButton1.setCompleteText("checked");
-            circularButton1.setOnClickListener(new View.OnClickListener() {
+//            final CircularProgressButton circularButton1 = (CircularProgressButton) convertView.findViewById(R.id.punch_card_main_habit_button_punch);
+//            circularButton1.setIdleText(getResources().getString(R.string.check));
+////            circularButton1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+//            circularButton1.setCompleteText("checked");
+//            circularButton1.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    if (circularButton1.getProgress() == 0) {
+//                        circularButton1.setIndeterminateProgressMode(true);
+//                        circularButton1.setProgress(50);
+//                    }
+//                }
+//            });
+            final IndeterminateProgressButton btnMorph1 = (IndeterminateProgressButton) convertView.findViewById(R.id.btnMorph1);
+            morphToSquare(btnMorph1, 0);
+            btnMorph1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (circularButton1.getProgress() == 0) {
-                        circularButton1.setIndeterminateProgressMode(true);
-                        circularButton1.setProgress(50);
-                    }
+                    onMorphButton1Clicked(btnMorph1);
                 }
             });
             return convertView;
         }
+        private void onMorphButton1Clicked(final IndeterminateProgressButton btnMorph) {
+            if (mMorphCounter1 == 0) {
+                //mMorphCounter1++;
+                //morphToSquare(btnMorph, integer(R.integer.mb_animation));
+            } else if (mMorphCounter1 == 1) {
+                mMorphCounter1 = 0;
+                simulateProgress1(btnMorph);
+            }
+        }
+        private void morphToSquare(final IndeterminateProgressButton btnMorph, int duration) {
+            MorphingButton.Params square = MorphingButton.Params.create()
+                    .duration(duration)
+                    .cornerRadius(dimen(R.dimen.mb_corner_radius_2))
+                    .width(dimen(R.dimen.mb_width_100))
+                    .height(dimen(R.dimen.mb_height_56))
+                    .color(color(R.color.mb_blue))
+                    .colorPressed(color(R.color.mb_blue_dark))
+                    .text(getString(R.string.check));
+            btnMorph.morph(square);
+        }
+        private void morphToSuccess(final IndeterminateProgressButton btnMorph) {
+            MorphingButton.Params circle = MorphingButton.Params.create()
+                    .duration(integer(R.integer.mb_animation))
+                    .cornerRadius(dimen(R.dimen.mb_height_56))
+                    .width(dimen(R.dimen.mb_height_56))
+                    .height(dimen(R.dimen.mb_height_56))
+                    .color(color(R.color.mb_green))
+                    .colorPressed(color(R.color.mb_green_dark))
+                    .icon(R.drawable.ic_check_white_24dp);
+            btnMorph.morph(circle);
+        }
+        private void simulateProgress2(@NonNull final IndeterminateProgressButton button) {
+            int progressColor = color(R.color.mb_blue);
+            int color = color(R.color.mb_gray);
+            int progressCornerRadius = dimen(R.dimen.mb_corner_radius_4);
+            int width = dimen(R.dimen.mb_width_200);
+            int height = dimen(R.dimen.mb_height_8);
+            int duration = integer(R.integer.mb_animation);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    morphToSquare(button, integer(R.integer.mb_animation));
+                    button.unblockTouch();
+                }
+            }, 4000);
+
+            button.blockTouch(); // prevent user from clicking while button is in progress
+            button.morphToProgress(color, progressCornerRadius, width, height, duration, progressColor);
+        }
+
+        private void simulateProgress1(@NonNull final IndeterminateProgressButton button) {
+            int progressColor1 = color(R.color.holo_blue_bright);
+            int progressColor2 = color(R.color.holo_green_light);
+            int progressColor3 = color(R.color.holo_orange_light);
+            int progressColor4 = color(R.color.holo_red_light);
+            int color = color(R.color.mb_gray);
+            int progressCornerRadius = dimen(R.dimen.mb_corner_radius_4);
+            int width = dimen(R.dimen.mb_width_200);
+            int height = dimen(R.dimen.mb_height_8);
+            int duration = integer(R.integer.mb_animation);
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    morphToSuccess(button);
+                    button.unblockTouch();
+                }
+            }, 4000);
+
+            button.blockTouch(); // prevent user from clicking while button is in progress
+            button.morphToProgress(color, progressCornerRadius, width, height, duration, progressColor1, progressColor2,
+                    progressColor3, progressColor4);
+        }
     }
+
 
 }

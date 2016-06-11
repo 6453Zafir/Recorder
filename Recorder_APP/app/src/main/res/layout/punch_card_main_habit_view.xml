@@ -53,20 +53,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="70dp">
-            <com.dd.CircularProgressButton
-                android:id="@+id/punch_card_main_habit_button_punch"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="8dp"
-                android:textColor="#fff"
-                android:textSize="12sp"
-                app:cpb_cornerRadius="48dp"
-                app:cpb_colorIndicator="@color/positiveButton"
-                app:cpb_colorProgress="@color/circleBackground"
-                app:cpb_iconComplete="@drawable/ic_check_circle_white_24dp"
-                app:cpb_textError="Error"
-                app:cpb_textIdle="@strings/check" />/>
 
+            <com.dd.morphingbutton.impl.IndeterminateProgressButton
+                android:id="@+id/btnMorph1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/whiteText"
+                android:layout_gravity="center"/>
         </FrameLayout>
 
 

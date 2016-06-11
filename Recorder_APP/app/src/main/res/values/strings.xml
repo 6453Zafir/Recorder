@@ -96,4 +96,6 @@
     <string name="title_item_detail">Item Detail</string>
     <string name="title_activity_register">register</string>
     <string name="check">Check</string>
+    <integer name="mb_animation">500</integer>
+    <string name="mb_button">Button</string>
 </resources>
