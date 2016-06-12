@@ -1,26 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content"
+    android:weightSum="1">
     <TextView
         android:id="@+id/id"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:text="friend"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:layout_weight="0.25" />
 
     <TextView
         android:id="@+id/content"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:text="123123121"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:layout_weight="0.45" />
+
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"
+        android:src="@drawable/score"
+        android:scaleType="fitCenter"
+        android:layout_weight="0.15"
+        android:paddingLeft="9dp"
+        android:paddingTop="9dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="9dp" />
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/score"
-        android:layout_gravity="right"
-        android:textAppearance="?attr/textAppearanceListItem"/>
+        android:text="100"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:layout_alignParentEnd="true"
+        android:textAlignment="textEnd"
+        android:layout_weight="0.15"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp" />
 
 </LinearLayout>

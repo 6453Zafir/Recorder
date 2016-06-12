@@ -27,6 +27,7 @@
             android:weightSum="1"
             android:paddingTop="10dp"
             android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:background="@color/lightBackground">
 
             <EditText
@@ -35,7 +36,7 @@
                 android:layout_height="30dp"
                 android:inputType="numberSigned"
                 android:ems="10"
-                android:layout_weight="0.8"
+                android:layout_weight="0.9"
                 android:hint="phone number to search"
                 android:textColor="#7b7b7b"
                 android:textColorHighlight="#a7a7a7"
@@ -46,26 +47,24 @@
             <Button
                 android:layout_width="0dp"
                 android:layout_height="30dp"
-                android:text="Search"
                 android:id="@+id/friend_search"
-                android:layout_weight="0.2"
+                android:layout_weight="0.1"
                 android:textSize="15sp"
-                android:background="#00ffffff" />
+                android:background="@android:drawable/ic_search_category_default" />
 
         </LinearLayout>
 
         <LinearLayout
             android:orientation="horizontal"
             android:id="@+id/frameLayout"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:weightSum="1"
             android:baselineAligned="false">
 
         <include layout="@layout/item_friend_list"
-            android:layout_weight="5.34"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         </LinearLayout>
     </LinearLayout>
