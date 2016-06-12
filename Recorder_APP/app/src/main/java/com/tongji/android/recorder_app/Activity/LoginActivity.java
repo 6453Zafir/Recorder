@@ -269,6 +269,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             showProgress(false);
                             Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
                             myApp.setStatus(MyApplication.ONLINE);
+                            myApp.setPhoneNumber(email);
                             Intent it = new Intent(LoginActivity.this,MainActivity.class);
                             setResult(MainActivity.PREPARE_DATE_AFTER_LOGIN,it);
                             finish();

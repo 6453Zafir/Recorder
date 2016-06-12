@@ -82,6 +82,8 @@ public class ItemDetailFragment extends Fragment {
                 if(id==DateList.ITEMS.get(i).id && type == DateList.ITEMS.get(i).type){
                     dateItem = DateList.ITEMS.get(i);
                     break;
+                }else{
+                    //dateItem=
                 }
             }
 
@@ -112,18 +114,21 @@ public class ItemDetailFragment extends Fragment {
         Calendar c =  Calendar.getInstance(Locale.getDefault());
         Date d = new Date();
         c.set(2016,6,d.getDate());
-        for(int i = dateItem.getDateSize()-1;i>=0;i--) {
+        if(dateItem !=  null){
+            for(int i = dateItem.getDateSize()-1;i>=0;i--) {
 
-            Date storedDateFromDB = dateItem.getDate(i);
+                Date storedDateFromDB = dateItem.getDate(i);
 
-            long mili = c.getTime().getTime()-storedDateFromDB.getTime();
-            long offset = TimeUnit.MILLISECONDS.toDays(mili);
-            if(offset>=0 && offset<=7){
-                intensity++;
-            }else {
-                break;
+                long mili = c.getTime().getTime()-storedDateFromDB.getTime();
+                long offset = TimeUnit.MILLISECONDS.toDays(mili);
+                if(offset>=0 && offset<=7){
+                    intensity++;
+                }else {
+                    break;
+                }
             }
         }
+
         float intensity_per = intensity/7;
         //Toast.makeText(getActivity(),intensity+" "+intensity_per+" ",Toast.LENGTH_SHORT).show();
         ringView.setPercentage(intensity_per);
@@ -159,23 +164,26 @@ public class ItemDetailFragment extends Fragment {
     private void addEvents(CompactCalendarView compactCalendarView, DateItem dateItem) {
 //        currentCalender.setTime(new Date());
 //        currentCalender.set(Calendar.DAY_OF_MONTH, 1);
-        for(int i = 0;i<dateItem.getDateSize();i++){
-            Date storedDateFromDB = dateItem.getDate(i);
+        if(dateItem!=null){
+            for(int i = 0;i<dateItem.getDateSize();i++){
+                Date storedDateFromDB = dateItem.getDate(i);
 
-            int day = storedDateFromDB.getDate();
-            int mo = storedDateFromDB.getMonth()-1;
-            int year = storedDateFromDB.getYear()+1900;
+                int day = storedDateFromDB.getDate();
+                int mo = storedDateFromDB.getMonth()-1;
+                int year = storedDateFromDB.getYear()+1900;
 
-            currentCalender.set(year,mo,day);
-            //currentCalender.setTime(storedDateFromDB);
+                currentCalender.set(year,mo,day);
+                //currentCalender.setTime(storedDateFromDB);
 
-            setToMidnight(currentCalender);
-            long timeInMillis = currentCalender.getTimeInMillis();
+                setToMidnight(currentCalender);
+                long timeInMillis = currentCalender.getTimeInMillis();
 
-            List<Event> events = getEvents(timeInMillis, 1);
+                List<Event> events = getEvents(timeInMillis, 1);
 
-            compactCalendarView.addEvents(events);
+                compactCalendarView.addEvents(events);
+            }
         }
+
 
 
     }

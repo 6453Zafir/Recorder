@@ -100,6 +100,7 @@ public class MainActivity extends ActionBarActivity
         if(Objects.equals(data.get("token"),"1")){
             Log.i("myLog",data.get("nickname"));
             myApp.setStatus(MyApplication.ONLINE);
+            myApp.setPhoneNumber(data.get("username"));
             nickname.setText(data.get("nickname"));
             btn.setText("Log out");
         }else {

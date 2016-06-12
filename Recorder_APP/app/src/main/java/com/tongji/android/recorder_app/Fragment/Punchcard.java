@@ -3,6 +3,7 @@ package com.tongji.android.recorder_app.Fragment;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
@@ -32,11 +33,17 @@ import android.widget.Toast;
 import com.dd.morphingbutton.MorphingButton;
 import com.dd.morphingbutton.impl.IndeterminateProgressButton;
 import com.dd.morphingbutton.impl.LinearProgressButton;
+import com.tongji.android.recorder_app.Activity.MainActivity;
+import com.tongji.android.recorder_app.Model.DateItem;
+import com.tongji.android.recorder_app.Model.DateList;
 import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.Model.SystemDefaultHabit;
 import com.tongji.android.recorder_app.Model.SystemHabitList;
 import com.tongji.android.recorder_app.R;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -210,6 +217,9 @@ public class Punchcard extends Fragment {
                         HabitList.addItem(habit);
                         SystemHabitList.removeItem(currentHabit);
                         System.out.println("Habit : " + HabitList.ITEMS.size() + ", System: " + SystemHabitList.ITEMS.size());
+                        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
+
+                        getActivity().sendBroadcast(intent);
                     } else {
 
 
@@ -235,10 +245,12 @@ public class Punchcard extends Fragment {
 
     //打卡界面的gridview的适配器
     public class PuncuGridViewAdapter extends BaseAdapter {
-
+        private int mMorphCounter1[] =new int[HabitList.ITEMS.size()];
         private LayoutInflater inflater;
         private Context context;
-        private int mMorphCounter1 = 1;
+
+        private int type;
+        private int id;
         public PuncuGridViewAdapter (Context context) {
             this.inflater = LayoutInflater.from(context);
             this.context = context;
@@ -260,10 +272,12 @@ public class Punchcard extends Fragment {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
+        public View getView(final int position, View convertView, ViewGroup parent) {
+             mMorphCounter1[position] = 1;
             convertView = inflater.inflate(R.layout.punch_card_main_habit_view,null);
             Habit currentHabit = HabitList.ITEMS.get(position);
+            type=currentHabit.type;
+            id = currentHabit.id;
             TextView textView = (TextView) convertView.findViewById(R.id.punch_card_main_habit_textView);
             textView.setText(currentHabit.habitName);
 //            final CircularProgressButton circularButton1 = (CircularProgressButton) convertView.findViewById(R.id.punch_card_main_habit_button_punch);
@@ -284,17 +298,17 @@ public class Punchcard extends Fragment {
             btnMorph1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    onMorphButton1Clicked(btnMorph1);
+                    onMorphButton1Clicked(btnMorph1,position);
                 }
             });
             return convertView;
         }
-        private void onMorphButton1Clicked(final IndeterminateProgressButton btnMorph) {
-            if (mMorphCounter1 == 0) {
+        private void onMorphButton1Clicked(final IndeterminateProgressButton btnMorph, int position) {
+            if (mMorphCounter1[position] == 0) {
                 //mMorphCounter1++;
                 //morphToSquare(btnMorph, integer(R.integer.mb_animation));
-            } else if (mMorphCounter1 == 1) {
-                mMorphCounter1 = 0;
+            } else if (mMorphCounter1[position] == 1) {
+                mMorphCounter1[position] = 0;
                 simulateProgress1(btnMorph);
             }
         }
@@ -319,6 +333,15 @@ public class Punchcard extends Fragment {
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
+            Calendar c = Calendar.getInstance(Locale.ENGLISH);
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH)+1;
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            Toast.makeText(getActivity(),year+" "+month+" "+day,Toast.LENGTH_SHORT).show();
+            c.set(year,month,day);
+            DateItem d = new DateItem(type,id);
+            d.addDate(c.getTime());
+            DateList.addItem(type,d);
         }
         private void simulateProgress2(@NonNull final IndeterminateProgressButton button) {
             int progressColor = color(R.color.mb_blue);
