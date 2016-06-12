@@ -9,6 +9,16 @@ public class MyApplication extends Application {
     public static int ONLINE = 1;
     public static int OFFLINE = 0;
 
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    private String phoneNumber ;
+
     public int getStatus() {
         return status;
     }
