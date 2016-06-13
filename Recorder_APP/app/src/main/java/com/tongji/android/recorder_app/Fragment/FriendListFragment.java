@@ -62,7 +62,7 @@ public class FriendListFragment extends Fragment {
     private String mParam2;
     private boolean isFriendExist=false;
     private String friendphoneNum;
-
+    private SimpleItemRecyclerViewAdapter adapter;
     public FriendListFragment() {
         // Required empty public constructor
     }
@@ -92,13 +92,6 @@ public class FriendListFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-        Friend f = new Friend("friend1","1234",88);
-        FriendList.addItem(f);
-        Friend f1 = new Friend("friend2","1234",88);
-        FriendList.addItem(f1);
-        Friend f2 = new Friend("friend3","1234",88);
-        FriendList.addItem(f2);
-
 
     }
 
@@ -106,14 +99,25 @@ public class FriendListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.friend_list_fragment, container, false);
+        View recyclerView = v.findViewById(R.id.item_friend_list);
+        assert recyclerView != null;
+        setupRecyclerView((RecyclerView) recyclerView);
+        NoSQL.with(getActivity()).using(Friend.class)
+                .bucketId("friend")
+                .retrieve(new RetrievalCallback<Friend>() {
+                    @Override
+                    public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
+                        for(int i=0;i<noSQLEntities.size();i++){
+                            Friend addfriend = noSQLEntities.get(i).getData();
+                            FriendList.addItem(addfriend);
+
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
+                });
+
         FriendPhoneNum=(EditText)v.findViewById(R.id.friend_number);
         SerachFriendBtn = (Button)v.findViewById(R.id.friend_search);
-        if(friendphoneNum!=null){
-            // call the ifFriendExist function
-            if(true){
-
-            }
-        }
         SerachFriendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -141,40 +145,46 @@ public class FriendListFragment extends Fragment {
 
                                                 }
                                             })
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     AsyncHttpClient client = new AsyncHttpClient();
                                                     RequestParams params = new RequestParams();
                                                     params.add("phoneNumber","13661828533");
-                                                    params.add("addPhoneNumber","1234");
+                                                    params.add("addPhoneNumber",friendphoneNum);
                                                     client.post("http://lshunran.com:3000/recorder/add", params, new AsyncHttpResponseHandler() {
                                                         @Override
                                                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                                                             String re = new String(responseBody);
                                                             try{
                                                                 JSONObject object = new JSONObject(re);
-                                                                int errCode =object.getInt("errCode");
+                                                                int errCode = object.getInt("errCode");
                                                                 if(errCode == 0 ){
-                                                                    Friend mynewfriend = new Friend(friendphoneNum,"ouhou",0);
+                                                                    String addedusername = object.getString("username");
+                                                                    String addedphoneNum = object.getString("phoneNumber");
+                                                                    int addedscore = object.getInt("score");
+                                                                    //新建要添加好友的对象
+                                                                    Friend mynewfriend = new Friend(addedphoneNum,addedusername,addedscore);
                                                                     NoSQLEntity<Friend>entity=new NoSQLEntity<Friend>("friend",friendphoneNum+"");
                                                                     entity.setData(mynewfriend);
                                                                     NoSQL.with(getActivity()).using(Friend.class).save(entity);
-                                                                    NoSQL.with(getActivity()).using(Friend.class)
-                                                                            .bucketId("friend")
-                                                                            .retrieve(new RetrievalCallback<Friend>() {
-                                                                                @Override
-                                                                                public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
-                                                                                    for(int i=0;i<noSQLEntities.size();i++){
-                                                                                        Friend addfriend = noSQLEntities.get(i).getData();
-                                                                                        FriendList.addItem(addfriend);
-                                                                                    }
-                                                                                }
-                                                                            });
+                                                                    FriendList.addItem(mynewfriend);
+//                                                                    NoSQL.with(getActivity()).using(Friend.class)
+//                                                                            .bucketId("friend")
+//                                                                            .retrieve(new RetrievalCallback<Friend>() {
+//                                                                                @Override
+//                                                                                public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
+//                                                                                    for(int i=0;i<noSQLEntities.size();i++){
+//                                                                                        Friend addfriend = noSQLEntities.get(i).getData();
+//                                                                                        FriendList.addItem(addfriend);
+//                                                                                    }
+//                                                                                }
+//                                                                            });
+                                                                    adapter.notifyDataSetChanged();
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.success)
                                                                             .setTitle("Congratulations：")
-                                                                            .setMessage("You have added the "+friendphoneNum+" as your friend!Now you can check his/her habit list")
+                                                                            .setMessage("You have added the "+friendphoneNum+" as your friend! Now you can check his/her habit list")
                                                                             .setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
                                                                                 @Override
                                                                                 public void onClick(DialogInterface dialog, int which) {
@@ -192,7 +202,7 @@ public class FriendListFragment extends Fragment {
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.error)
                                                                             .setTitle("Sorry：")
-                                                                            .setMessage("You have added the "+friendphoneNum+" as friend")
+                                                                            .setMessage("You have already added "+friendphoneNum)
 
                                                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                                                 @Override
@@ -258,13 +268,12 @@ public class FriendListFragment extends Fragment {
             }
         });
 
-        View recyclerView = v.findViewById(R.id.item_friend_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+
         return v;
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(FriendList.ITEMS));
+        adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
+        recyclerView.setAdapter(adapter);
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -286,8 +295,8 @@ public class FriendListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).phoneNumber);
-            holder.mContentView.setText(mValues.get(position).username);
+            holder.mIdView.setText(mValues.get(position).username);
+            holder.mContentView.setText(mValues.get(position).phoneNumber);
             holder.mScoreView.setText(mValues.get(position).score+"");
 //
 
