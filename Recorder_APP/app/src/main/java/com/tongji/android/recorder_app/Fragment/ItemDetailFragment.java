@@ -143,9 +143,9 @@ public class ItemDetailFragment extends Fragment {
         INTENSITY = intensity_per;
 
         MyApplication myapp = (MyApplication)getActivity().getApplication();
-      //  Toast.makeText(getActivity(),mItem.habitName,Toast.LENGTH_SHORT).show();
+     
         myapp.setTempHabitName(mItem.habitName);
-        //Toast.makeText(getActivity(),intensity+" "+intensity_per+" ",Toast.LENGTH_SHORT).show();
+
         ringView.setPercentage(intensity_per);
         ringView.setColor(R.color.colorPrimaryDark);
 
