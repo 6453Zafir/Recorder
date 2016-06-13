@@ -18,18 +18,30 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.menu.ExpandedMenuView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.GridView;
+
 import android.widget.ListView;
+
+import android.widget.ListAdapter;
+import android.widget.Spinner;
+
 import android.widget.TextView;
 import android.widget.Toast;
 
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
 import com.dd.morphingbutton.MorphingButton;
 import com.dd.morphingbutton.impl.IndeterminateProgressButton;
 import com.dd.morphingbutton.impl.LinearProgressButton;
@@ -42,8 +54,13 @@ import com.tongji.android.recorder_app.Model.SystemDefaultHabit;
 import com.tongji.android.recorder_app.Model.SystemHabitList;
 import com.tongji.android.recorder_app.R;
 
+
 import java.util.Calendar;
 import java.util.Locale;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,6 +76,10 @@ public class Punchcard extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private String spinnerItemString;
+    private List<Habit> temp;
+
 
 
     public Punchcard() {
@@ -101,6 +122,7 @@ public class Punchcard extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+        temp = new ArrayList<Habit>();
     }
 
     @Override
@@ -110,8 +132,6 @@ public class Punchcard extends Fragment {
         if (!SystemHabitList.flag) {
             SystemHabitList.initList();
         }
-
-
 
         View view = inflater.inflate(R.layout.punch_card_fragment, container, false);
 
@@ -134,7 +154,7 @@ public class Punchcard extends Fragment {
                 final DialogGridViewAdapter dialogGridViewAdapter = new DialogGridViewAdapter(getActivity());
                 gridView.setAdapter(dialogGridViewAdapter);
 
-                TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
+                final TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
 
                 if (SystemHabitList.ITEMS.size() == 0) {
                     textView.setBackgroundColor(Color.parseColor("#ee0000"));
@@ -144,24 +164,150 @@ public class Punchcard extends Fragment {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        button.setTextColor(Color.parseColor("#ffffff"));
                         AlertDialog.Builder buttonBuilder = new AlertDialog.Builder(getActivity());
 
+                        View addOwnHabitView = inflater.inflate(R.layout.add_user_own_habit,null);
+
+
+                        final EditText editText = (EditText) addOwnHabitView.findViewById(R.id.add_user_own_habit_EditText);
+                        final Spinner spinner = (Spinner)
+                                addOwnHabitView.findViewById(R.id.add_user_own_habit_spinner);
+
+                        ArrayAdapter<CharSequence> arrayAdapter =
+                                ArrayAdapter.createFromResource(
+                                        getActivity(),R.array.select_user_habit_type,android.R.layout.simple_spinner_item
+                                );
+
+                        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+                        spinner.setAdapter(arrayAdapter);
+
+                        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                            @Override
+                            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                                spinnerItemString = (String) parent.getItemAtPosition(position);
+                            }
+
+                            @Override
+                            public void onNothingSelected(AdapterView<?> parent) {
+
+                            }
+                        });
+
+                        buttonBuilder.setView(addOwnHabitView).setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+                                CharSequence charSequence = editText.getText();
+
+                                if (charSequence.toString().trim().equals("")) {
+                                    AlertDialog.Builder ifNullBuilder = new AlertDialog.Builder(getActivity());
+                                    ifNullBuilder.setTitle("You must enter habit name")
+                                            .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.dismiss();
+                                        }
+                                    }).create().show();
+
+                                } else {
+                                    Habit currentHabit = null;
+                                    switch (spinnerItemString) {
+                                        case "Date" :
+                                            currentHabit = new Habit("0", charSequence.toString(), 0, 0,"f");      //记得修改ID
+                                            break;
+                                        case "Degree" :
+                                            currentHabit = new Habit("0", charSequence.toString(), 0, 1,"f");      //记得修改ID
+                                            break;
+                                        case "Do or Not" :
+                                            currentHabit = new Habit("0", charSequence.toString(), 0, 2,"f");      //记得修改ID
+                                            break;
+                                        case "Duration" :
+                                            currentHabit = new Habit("0", charSequence.toString(), 0, 3,"f");      //记得修改ID
+                                            break;
+                                        default :
+                                            break;
+                                    }
+
+                                    boolean currentFlag = false;
+                                    for (int i = 0; i < HabitList.ITEMS.size(); i++) {
+
+                                        if (HabitList.ITEMS.get(i).habitName.equals(charSequence.toString().trim())) {
+                                            currentFlag = true;
+                                            break;
+                                        }
+                                    }
+
+
+                                    if (currentFlag) {
+                                        AlertDialog.Builder habitBuilder = new AlertDialog.Builder(getActivity());
+                                        habitBuilder.setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                dialog.dismiss();
+                                            }
+                                        }).setTitle("Habit already exists!").create().show();
+
+                                    } else {
+                                        HabitList.addItem(currentHabit);
+                                        //通知服务器并且加入到本地数据库里面，往下写
+                                    }
+
+                                    dialog.dismiss();
+                                }
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        }).setNeutralButton("Reset", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                editText.setText("");
+                            }
+                        });
+
+                        buttonBuilder.create().show();
                     }
                 });
 
                 builder.setView(dialogView).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if(temp!=null){
+                            for(int i=0;i<temp.size();i++){
+                                HabitList.addItem(temp.get(i));
+                                DateItem dateItem = new DateItem(temp.get(i).type,temp.get(i).id);
+                                DateList.addItem(dateItem.type,dateItem);
+                            }
+                        }
+                        temp.clear();
 
                         dialogGridViewAdapter.notifyDataSetChanged();
                         puncuGridViewAdapter.notifyDataSetChanged();
                         dialog.dismiss();
-                        Toast.makeText(getActivity(),"Check OK",Toast.LENGTH_SHORT).show();
+                       // Toast.makeText(getActivity(),"Check OK",Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
+
+                        getActivity().sendBroadcast(intent);
+                        //把系统默认的习惯加入到HabitList里面，并且更新服务器数据和本地数据库，往下写
+
+
                     }
                 }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        if(temp!=null){
+                            for(int i=0;i<temp.size();i++){
+                                SystemDefaultHabit currentHabit = new
+                                        SystemDefaultHabit(temp.get(i).id,temp.get(i).habitName,temp.get(i).score,temp.get(i).type,temp.get(i).feature);
+                                SystemHabitList.addItem(currentHabit);
+                            }
+                        }
+                        temp.clear();
+
                         dialog.dismiss();
                         Toast.makeText(getActivity(),"Check Cancel",Toast.LENGTH_SHORT).show();
                     }
@@ -204,7 +350,7 @@ public class Punchcard extends Fragment {
 
             convertView = inflater.inflate(R.layout.punch_card_add_custom_dialog_view,null);
             final SystemDefaultHabit currentHabit = SystemHabitList.ITEMS.get(position);
-            final Habit habit = new Habit(currentHabit.id,currentHabit.habitName,currentHabit.score,currentHabit.type);
+            final Habit habit = new Habit(currentHabit.id,currentHabit.habitName,currentHabit.score,currentHabit.type,currentHabit.feature);
             TextView textView = (TextView) convertView.findViewById(R.id.dialog_view_TextView);
             textView.setText(currentHabit.habitName);
 
@@ -214,14 +360,12 @@ public class Punchcard extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (checkBox.isChecked()) {
-                        HabitList.addItem(habit);
+                        //HabitList.addItem(habit);
+                        temp.add(habit);
                         SystemHabitList.removeItem(currentHabit);
                         System.out.println("Habit : " + HabitList.ITEMS.size() + ", System: " + SystemHabitList.ITEMS.size());
-                        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
 
-                        getActivity().sendBroadcast(intent);
                     } else {
-
 
                         if (HabitList.ITEMS.remove(habit)) {
                             System.out.println("Successfully");
@@ -250,7 +394,7 @@ public class Punchcard extends Fragment {
         private Context context;
 
         private int type;
-        private int id;
+        private String id;
         public PuncuGridViewAdapter (Context context) {
             this.inflater = LayoutInflater.from(context);
             this.context = context;
@@ -273,28 +417,24 @@ public class Punchcard extends Fragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-             mMorphCounter1[position] = 1;
+//             mMorphCounter1[position] = 1;
             convertView = inflater.inflate(R.layout.punch_card_main_habit_view,null);
             Habit currentHabit = HabitList.ITEMS.get(position);
             type=currentHabit.type;
             id = currentHabit.id;
             TextView textView = (TextView) convertView.findViewById(R.id.punch_card_main_habit_textView);
+            TextView detail = (TextView) convertView.findViewById(R.id.punch_card_main_habit_button_setting);
             textView.setText(currentHabit.habitName);
-//            final CircularProgressButton circularButton1 = (CircularProgressButton) convertView.findViewById(R.id.punch_card_main_habit_button_punch);
-//            circularButton1.setIdleText(getResources().getString(R.string.check));
-////            circularButton1.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-//            circularButton1.setCompleteText("checked");
-//            circularButton1.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    if (circularButton1.getProgress() == 0) {
-//                        circularButton1.setIndeterminateProgressMode(true);
-//                        circularButton1.setProgress(50);
-//                    }
-//                }
-//            });
+            detail.setText(currentHabit.feature);
+
             final IndeterminateProgressButton btnMorph1 = (IndeterminateProgressButton) convertView.findViewById(R.id.btnMorph1);
-            morphToSquare(btnMorph1, 0);
+            if (HabitList.ITEMS.get(position).isChecked) {
+               // Toast.makeText(getActivity(),"放大法萨芬", Toast.LENGTH_SHORT).show();
+                morphAlreadySuccess(btnMorph1);
+            }else {
+                morphToSquare(btnMorph1, 0);
+            }
+
             btnMorph1.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -304,12 +444,14 @@ public class Punchcard extends Fragment {
             return convertView;
         }
         private void onMorphButton1Clicked(final IndeterminateProgressButton btnMorph, int position) {
-            if (mMorphCounter1[position] == 0) {
+            if (HabitList.ITEMS.get(position).isChecked) {
+                morphAlreadySuccess(btnMorph);
+
                 //mMorphCounter1++;
                 //morphToSquare(btnMorph, integer(R.integer.mb_animation));
-            } else if (mMorphCounter1[position] == 1) {
-                mMorphCounter1[position] = 0;
-                simulateProgress1(btnMorph);
+            } else if (!HabitList.ITEMS.get(position).isChecked) {
+                //HabitList.ITEMS.get(position).isChecked = true;
+                simulateProgress1(btnMorph,position);
             }
         }
         private void morphToSquare(final IndeterminateProgressButton btnMorph, int duration) {
@@ -323,7 +465,7 @@ public class Punchcard extends Fragment {
                     .text(getString(R.string.check));
             btnMorph.morph(square);
         }
-        private void morphToSuccess(final IndeterminateProgressButton btnMorph) {
+        private void morphAlreadySuccess(final IndeterminateProgressButton btnMorph) {
             MorphingButton.Params circle = MorphingButton.Params.create()
                     .duration(integer(R.integer.mb_animation))
                     .cornerRadius(dimen(R.dimen.mb_height_56))
@@ -333,38 +475,48 @@ public class Punchcard extends Fragment {
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
-            Calendar c = Calendar.getInstance(Locale.ENGLISH);
+
+        }
+        private void morphToSuccess(final IndeterminateProgressButton btnMorph ,int position) {
+            MorphingButton.Params circle = MorphingButton.Params.create()
+                    .duration(integer(R.integer.mb_animation))
+                    .cornerRadius(dimen(R.dimen.mb_height_56))
+                    .width(dimen(R.dimen.mb_height_56))
+                    .height(dimen(R.dimen.mb_height_56))
+                    .color(color(R.color.mb_green))
+                    .colorPressed(color(R.color.mb_green_dark))
+                    .icon(R.drawable.ic_check_white_24dp);
+            btnMorph.morph(circle);
+            Calendar c = Calendar.getInstance(Locale.getDefault());
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH)+1;
             int day = c.get(Calendar.DAY_OF_MONTH);
-            Toast.makeText(getActivity(),year+" "+month+" "+day,Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getActivity(),year+" "+month+" "+day+":"+type+" "+id,Toast.LENGTH_SHORT).show();
             c.set(year,month,day);
-            DateItem d = new DateItem(type,id);
-            d.addDate(c.getTime());
-            DateList.addItem(type,d);
-        }
-        private void simulateProgress2(@NonNull final IndeterminateProgressButton button) {
-            int progressColor = color(R.color.mb_blue);
-            int color = color(R.color.mb_gray);
-            int progressCornerRadius = dimen(R.dimen.mb_corner_radius_4);
-            int width = dimen(R.dimen.mb_width_200);
-            int height = dimen(R.dimen.mb_height_8);
-            int duration = integer(R.integer.mb_animation);
+            DateList.ITEMS.get(position).addDate(c.getTime());
 
-            Handler handler = new Handler();
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    morphToSquare(button, integer(R.integer.mb_animation));
-                    button.unblockTouch();
-                }
-            }, 4000);
+            HabitList.ITEMS.get(position).isChecked = true;
+            HabitList.ITEMS.get(position).score++;
 
-            button.blockTouch(); // prevent user from clicking while button is in progress
-            button.morphToProgress(color, progressCornerRadius, width, height, duration, progressColor);
+            NoSQL.with(getActivity()).using(Habit.class)
+                    .bucketId("habit")
+                    .entityId(HabitList.ITEMS.get(position).id)
+                    .delete();
+            NoSQL.with(getActivity()).using(DateItem.class)
+                    .bucketId("date")
+                    .entityId(type+"+"+id)
+                    .delete();
+
+            NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",HabitList.ITEMS.get(position).id);
+            entity.setData(HabitList.ITEMS.get(position));
+            NoSQL.with(getActivity()).using(Habit.class).save(entity);
+            NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",type+"+"+id);
+            entity2.setData(DateList.ITEMS.get(position));
+            NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
         }
 
-        private void simulateProgress1(@NonNull final IndeterminateProgressButton button) {
+
+        private void simulateProgress1(@NonNull final IndeterminateProgressButton button , final int position) {
             int progressColor1 = color(R.color.holo_blue_bright);
             int progressColor2 = color(R.color.holo_green_light);
             int progressColor3 = color(R.color.holo_orange_light);
@@ -379,7 +531,7 @@ public class Punchcard extends Fragment {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    morphToSuccess(button);
+                    morphToSuccess(button, position);
                     button.unblockTouch();
                 }
             }, 4000);

@@ -162,6 +162,9 @@ public class MainActivity extends ActionBarActivity
                     NoSQL.with(MainActivity.this).using(DateItem.class)
                             .bucketId("date")
                             .delete();
+                    NoSQL.with(MainActivity.this).using(Friend.class)
+                            .bucketId("Friend")
+                            .delete();
                     setOffline();
                 }
 
@@ -196,7 +199,7 @@ public class MainActivity extends ActionBarActivity
     private void initDB(int status) {
 
         Calendar c =  Calendar.getInstance(Locale.getDefault());
-        Habit h1= new Habit(1,"早睡",12,1);
+        Habit h1= new Habit(1+"","早睡",0,1,"12:00");
         DateItem dateitem = new DateItem(h1.type,h1.id);
         c.set(2016,6,4);
         dateitem.addDate(c.getTime());
@@ -204,7 +207,7 @@ public class MainActivity extends ActionBarActivity
         dateitem.addDate(c.getTime());
 
         DateList.addItem(1, dateitem);
-        Habit h2= new Habit(2,"做作业",12,2);
+        Habit h2= new Habit(2+"","做作业",0,2,"2");
         DateItem dateitem2 = new DateItem(h2.type,h2.id);
         c.set(2016,6,2);
         dateitem2.addDate(c.getTime());
@@ -212,7 +215,7 @@ public class MainActivity extends ActionBarActivity
         c.set(2016,6,1);
         dateitem2.addDate(c.getTime());
         DateList.addItem(2, dateitem2);
-        Habit h3= new Habit(3,"健身",33,3);
+        Habit h3= new Habit(3+"","健身",0,3,"1");
         DateItem dateitem3 = new DateItem(h3.type,h3.id);
         c.set(2016,6,6);
         dateitem3.addDate(c.getTime());

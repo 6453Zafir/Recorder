@@ -40,6 +40,7 @@ import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
 import com.tongji.android.recorder_app.R;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -246,9 +247,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            mAuthTask.execute((Void) null);
             AsyncHttpClient client = new AsyncHttpClient();
             RequestParams params = new RequestParams();
-            params.add("username",email);
+            params.add("phoneNumber",email);
             params.add("password",password);
-            client.post("http://qiancs.cn/MyChat/login.php", params,new AsyncHttpResponseHandler() {
+            client.post("http://lshunran.com:3000/recorder/login", params,new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onStart() {
@@ -260,12 +261,19 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     // called when response HTTP status is "200 OK"
                     String re = new String(response);
                     try {
-                        JSONObject object = new JSONObject(re);
-                        String status = object.getString("status");
-                        String nickname = object.getString("nickname");
+                        int status = 1;
+                        String nickname = null;
+                        JSONArray array = new JSONArray(re);
+                        for (int i = 0; i < array.length(); i++) {
+                            JSONObject object = (JSONObject) array.get(i);
+                            
+                            status = object.getInt("errCode");
+                             nickname = object.getString("username");
+                        }
+
                         //String phone = object.getString("phone");
                         sh.save(email,password,nickname);
-                        if(status.equals("success")){
+                        if(status == 0){
                             showProgress(false);
                             Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
                             myApp.setStatus(MyApplication.ONLINE);

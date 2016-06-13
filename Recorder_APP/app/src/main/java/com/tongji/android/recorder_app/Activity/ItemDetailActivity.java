@@ -17,8 +17,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.view.MenuItem;
 
+import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Fragment.ItemDetailFragment;
 import com.tongji.android.recorder_app.R;
+
+import java.text.DecimalFormat;
 
 import me.imid.swipebacklayout.lib.SwipeBackLayout;
 import me.imid.swipebacklayout.lib.app.SwipeBackActivity;
@@ -47,8 +50,20 @@ public class ItemDetailActivity extends SwipeBackActivity implements AppCompatCa
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "分享功能即将开放，敬请期待", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+//                Snackbar.make(view, "分享功能即将开放，敬请期待", Snackbar.LENGTH_LONG)
+//                        .setAction("Action", null).show();
+                Intent shareIntent = new Intent();
+                shareIntent.setAction(Intent.ACTION_SEND);
+                float intensity = ItemDetailFragment.INTENSITY*100;
+                DecimalFormat decimalFormat=new DecimalFormat(".00");//构造方法的字符格式这里如果小数不足2位,会以0补足.
+                String p=decimalFormat.format(intensity);
+                MyApplication myapp = (MyApplication)getApplication();
+                String name = myapp.getTempHabitName();
+                shareIntent.putExtra(Intent.EXTRA_TEXT, "【Recorder】我本周"+name+"习惯的坚持度是"+p+"% ! 快来看看吧\n"+ "下载链接："+"qiancs.cn/home/app-release.apk");
+                shareIntent.setType("text/plain");
+
+                //设置分享列表的标题，并且每次都显示分享列表
+                startActivity(Intent.createChooser(shareIntent, "分享到"));
             }
         });
 
@@ -72,8 +87,8 @@ public class ItemDetailActivity extends SwipeBackActivity implements AppCompatCa
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putInt(ItemDetailFragment.ARG_ITEM_ID,
-                    getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_ID,0));
+            arguments.putString(ItemDetailFragment.ARG_ITEM_ID,
+                    getIntent().getStringExtra(ItemDetailFragment.ARG_ITEM_ID));
             arguments.putInt(ItemDetailFragment.ARG_ITEM_TYPE,
                     getIntent().getIntExtra(ItemDetailFragment.ARG_ITEM_TYPE,0));
             ItemDetailFragment fragment = new ItemDetailFragment();
