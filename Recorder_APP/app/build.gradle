@@ -35,6 +35,7 @@ dependencies {
     //    compile 'com.esotericsoftware.kryo:kryo:2.24.0'
     //    compile 'org.greenrobot:eventbus:3.0.0'
     compile 'com.colintmiller:simplenosql:0.5.1'
+    compile 'com.wdullaer:materialdatetimepicker:2.3.0'
     //compile 'com.github.dmytrodanylyk.circular-progress-button:library:1.1.3'
     //compile 'com.github.dmytrodanylyk:android-morphing-button:98a4986e56'
     compile project(':library')

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
+    android:padding="8dp"
     android:layout_height="match_parent">
     
     <ImageView
@@ -15,12 +16,53 @@
         android:id="@+id/add_user_own_habit_EditText"
         android:hint="Please Enter Your Habit Name"
         />
-
-    <Spinner
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/add_user_own_habit_spinner"
-       />
+        android:orientation="horizontal">
+        <TextView
+            android:layout_gravity="center"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:text="Habit Type"/>
+        <Spinner
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:id="@+id/add_user_own_habit_spinner"
+            />
+    </LinearLayout>
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/hint_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Please choose:"/>
+        <Button
+            android:id="@+id/time_picker"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:text="alert time"/>
+        <EditText
+            android:id="@+id/duration_input"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="Duration time (minutes)"/>
+
+        <EditText
+            android:id="@+id/degree_input"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:hint="how many times ?"/>
+    </LinearLayout>
 
 
     

@@ -1,24 +1,18 @@
 package com.tongji.android.recorder_app.Fragment;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DimenRes;
 import android.support.annotation.IntegerRes;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.widget.ListViewAutoScrollHelper;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.view.menu.ExpandedMenuView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,15 +22,12 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.GridView;
 
-import android.widget.ListView;
-
-import android.widget.ListAdapter;
 import android.widget.Spinner;
 
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 
@@ -44,7 +35,6 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.dd.morphingbutton.MorphingButton;
 import com.dd.morphingbutton.impl.IndeterminateProgressButton;
-import com.dd.morphingbutton.impl.LinearProgressButton;
 import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Model.DateItem;
 import com.tongji.android.recorder_app.Model.DateList;
@@ -55,11 +45,12 @@ import com.tongji.android.recorder_app.Model.SystemHabitList;
 import com.tongji.android.recorder_app.R;
 
 
+
+import android.app.TimePickerDialog;
 import java.util.Calendar;
 import java.util.Locale;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -79,6 +70,9 @@ public class Punchcard extends Fragment {
 
     private String spinnerItemString;
     private List<Habit> temp;
+    private String daytime ;
+    private String duration ;
+    private String degree ;
 
 
 
@@ -125,9 +119,11 @@ public class Punchcard extends Fragment {
         temp = new ArrayList<Habit>();
     }
 
+
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              Bundle savedInstanceState) {
+
 
         if (!SystemHabitList.flag) {
             SystemHabitList.initList();
@@ -160,15 +156,19 @@ public class Punchcard extends Fragment {
                     textView.setBackgroundColor(Color.parseColor("#ee0000"));
                 }
 
+
                 final Button button = (Button) dialogView.findViewById(R.id.add_custom_dialog_button);
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        AlertDialog.Builder buttonBuilder = new AlertDialog.Builder(getActivity());
 
-                        View addOwnHabitView = inflater.inflate(R.layout.add_user_own_habit,null);
+                        final AlertDialog.Builder buttonBuilder = new AlertDialog.Builder(getActivity());
 
-
+                        final View addOwnHabitView = inflater.inflate(R.layout.add_user_own_habit,null);
+                        final TextView hintText = (TextView) addOwnHabitView.findViewById(R.id.hint_text);
+                        final EditText durationInput = (EditText) addOwnHabitView.findViewById(R.id.duration_input);
+                        final EditText degreeInput = (EditText) addOwnHabitView.findViewById(R.id.degree_input);
+                        final Button timePicker = (Button) addOwnHabitView.findViewById(R.id.time_picker);
                         final EditText editText = (EditText) addOwnHabitView.findViewById(R.id.add_user_own_habit_EditText);
                         final Spinner spinner = (Spinner)
                                 addOwnHabitView.findViewById(R.id.add_user_own_habit_spinner);
@@ -186,6 +186,54 @@ public class Punchcard extends Fragment {
                             @Override
                             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                                 spinnerItemString = (String) parent.getItemAtPosition(position);
+                                switch (spinnerItemString) {
+                                    case "Date":
+                                        hintText.setText("Please choose time");
+                                        timePicker.setVisibility(View.VISIBLE);
+                                        timePicker.setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                final Calendar c = Calendar.getInstance();
+                                                int mHour = c.get(Calendar.HOUR_OF_DAY);
+                                                int mMinute = c.get(Calendar.MINUTE);
+
+                                                // Launch Time Picker Dialog
+                                                TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                                                        new TimePickerDialog.OnTimeSetListener() {
+
+                                                            @Override
+                                                            public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                  int minute) {
+                                                                daytime = hourOfDay + ":" + minute;
+                                                                //txtTime.setText(hourOfDay + ":" + minute);
+                                                            }
+                                                        }, mHour, mMinute, false);
+                                                timePickerDialog.show();
+
+                                            }
+                                        });
+                                        durationInput.setVisibility(View.GONE);
+                                        degreeInput.setVisibility(View.GONE);
+                                        break;
+                                    case "Degree":
+                                        hintText.setText("Please input times");
+                                        timePicker.setVisibility(View.GONE);
+                                        durationInput.setVisibility(View.GONE);
+                                        degreeInput.setVisibility(View.VISIBLE);
+                                        break;
+                                    case "Do or Not":
+                                        hintText.setText("It'a common habit");
+                                        timePicker.setVisibility(View.GONE);
+                                        durationInput.setVisibility(View.GONE);
+                                        degreeInput.setVisibility(View.GONE);
+                                        break;
+                                    case "Duration":
+                                        hintText.setText("Please input duration time");
+                                        timePicker.setVisibility(View.GONE);
+                                        durationInput.setVisibility(View.VISIBLE);
+                                        degreeInput.setVisibility(View.GONE);
+                                        break;
+                                }
                             }
 
                             @Override
@@ -200,7 +248,7 @@ public class Punchcard extends Fragment {
 
                                 CharSequence charSequence = editText.getText();
 
-                                if (charSequence.toString().trim().equals("")) {
+                                if (charSequence.toString().trim().equals("") ) {
                                     AlertDialog.Builder ifNullBuilder = new AlertDialog.Builder(getActivity());
                                     ifNullBuilder.setTitle("You must enter habit name")
                                             .setNegativeButton("OK", new DialogInterface.OnClickListener() {
@@ -214,16 +262,16 @@ public class Punchcard extends Fragment {
                                     Habit currentHabit = null;
                                     switch (spinnerItemString) {
                                         case "Date" :
-                                            currentHabit = new Habit("0", charSequence.toString(), 0, 0,"f");      //记得修改ID
+                                            currentHabit = new Habit("d1", charSequence.toString(), 0, 0,daytime);      //记得修改ID
                                             break;
                                         case "Degree" :
-                                            currentHabit = new Habit("0", charSequence.toString(), 0, 1,"f");      //记得修改ID
+                                            currentHabit = new Habit("d2", charSequence.toString(), 0, 1,degreeInput.getText().toString()+"times");      //记得修改ID
                                             break;
                                         case "Do or Not" :
-                                            currentHabit = new Habit("0", charSequence.toString(), 0, 2,"f");      //记得修改ID
+                                            currentHabit = new Habit("d3", charSequence.toString(), 0, 2,"");      //记得修改ID
                                             break;
                                         case "Duration" :
-                                            currentHabit = new Habit("0", charSequence.toString(), 0, 3,"f");      //记得修改ID
+                                            currentHabit = new Habit("d4", charSequence.toString(), 0, 3,durationInput.getText().toString()+"minutes");      //记得修改ID
                                             break;
                                         default :
                                             break;
@@ -250,6 +298,8 @@ public class Punchcard extends Fragment {
 
                                     } else {
                                         HabitList.addItem(currentHabit);
+                                        DateItem dateItem = new DateItem(currentHabit.type,currentHabit.id);
+                                        DateList.addItem(dateItem.type,dateItem);
                                         //通知服务器并且加入到本地数据库里面，往下写
                                     }
 
@@ -319,7 +369,8 @@ public class Punchcard extends Fragment {
         return view;
     }
 
-    //弹出的对话框的gridview适配器
+
+        //弹出的对话框的gridview适配器
     public class DialogGridViewAdapter extends BaseAdapter {
 
         private LayoutInflater inflater;

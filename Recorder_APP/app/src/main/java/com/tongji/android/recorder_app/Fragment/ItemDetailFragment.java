@@ -143,7 +143,7 @@ public class ItemDetailFragment extends Fragment {
         INTENSITY = intensity_per;
 
         MyApplication myapp = (MyApplication)getActivity().getApplication();
-     
+
         myapp.setTempHabitName(mItem.habitName);
 
         ringView.setPercentage(intensity_per);

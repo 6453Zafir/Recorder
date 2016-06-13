@@ -263,13 +263,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     try {
                         int status = 1;
                         String nickname = null;
-                        JSONArray array = new JSONArray(re);
-                        for (int i = 0; i < array.length(); i++) {
-                            JSONObject object = (JSONObject) array.get(i);
+                       // JSONArray array = new JSONArray(re);
+
+                            JSONObject object = new JSONObject(re);
                             
                             status = object.getInt("errCode");
                              nickname = object.getString("username");
-                        }
+                       // }
 
                         //String phone = object.getString("phone");
                         sh.save(email,password,nickname);
