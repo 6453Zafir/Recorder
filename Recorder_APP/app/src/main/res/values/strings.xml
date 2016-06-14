@@ -98,4 +98,6 @@
     <string name="check">Check</string>
     <integer name="mb_animation">500</integer>
     <string name="mb_button">Button</string>
+    <string name="appwidget_text">EXAMPLE</string>
+    <string name="add_widget">Add widget</string>
 </resources>

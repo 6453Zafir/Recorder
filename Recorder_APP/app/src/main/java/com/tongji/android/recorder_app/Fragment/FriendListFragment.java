@@ -1,25 +1,36 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
+import android.Manifest;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
+import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
+import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
@@ -31,6 +42,8 @@ import com.tongji.android.recorder_app.Activity.ItemListActivity;
 
 import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Application.MyApplication;
+import com.tongji.android.recorder_app.Model.Contacts;
+import com.tongji.android.recorder_app.Model.ContactsList;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.R;
@@ -63,6 +76,7 @@ public class FriendListFragment extends Fragment {
     private boolean isFriendExist=false;
     private String friendphoneNum;
     private SimpleItemRecyclerViewAdapter adapter;
+    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
     public FriendListFragment() {
         // Required empty public constructor
     }
@@ -93,6 +107,14 @@ public class FriendListFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        FriendList.ITEMS.clear();
+        FriendList.ITEM_MAP.clear();
     }
 
     @Override
@@ -102,6 +124,31 @@ public class FriendListFragment extends Fragment {
         View recyclerView = v.findViewById(R.id.item_friend_list);
         assert recyclerView != null;
         setupRecyclerView((RecyclerView) recyclerView);
+
+        getPermissionToReadUserContacts();
+
+        ContentResolver resolver = getActivity().getContentResolver();
+        Cursor cursor = resolver.query(ContactsContract.Contacts.CONTENT_URI,null,null,null,null);
+
+        while(cursor.moveToNext()){
+            String id = cursor.getString(cursor.getColumnIndex((ContactsContract.Contacts._ID)));
+            String name = cursor.getString(cursor.getColumnIndex((ContactsContract.Contacts.DISPLAY_NAME)));
+
+            Cursor phoneCursor = resolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID+"=?",new String[]{ id },null);
+            Log.i("Contacts info",id+"="+ name);
+            while (phoneCursor.moveToNext()){
+                String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                Log.i("Contacts info",phoneNumber);
+                Contacts mycontacts = new Contacts(id,phoneNumber,name,false);
+                NoSQLEntity<Contacts>entity=new NoSQLEntity<Contacts>("contact",id+"");
+                entity.setData(mycontacts);
+                NoSQL.with(getActivity()).using(Contacts.class).save(entity);
+                ContactsList.addItem(mycontacts);
+            }
+
+        }
+
         NoSQL.with(getActivity()).using(Friend.class)
                 .bucketId("friend")
                 .retrieve(new RetrievalCallback<Friend>() {
@@ -169,17 +216,6 @@ public class FriendListFragment extends Fragment {
                                                                     entity.setData(mynewfriend);
                                                                     NoSQL.with(getActivity()).using(Friend.class).save(entity);
                                                                     FriendList.addItem(mynewfriend);
-//                                                                    NoSQL.with(getActivity()).using(Friend.class)
-//                                                                            .bucketId("friend")
-//                                                                            .retrieve(new RetrievalCallback<Friend>() {
-//                                                                                @Override
-//                                                                                public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
-//                                                                                    for(int i=0;i<noSQLEntities.size();i++){
-//                                                                                        Friend addfriend = noSQLEntities.get(i).getData();
-//                                                                                        FriendList.addItem(addfriend);
-//                                                                                    }
-//                                                                                }
-//                                                                            });
                                                                     adapter.notifyDataSetChanged();
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.success)
@@ -271,6 +307,38 @@ public class FriendListFragment extends Fragment {
 
         return v;
     }
+
+    //--------------------------------------------------------------------------------------------------------------------
+
+
+    public void getPermissionToReadUserContacts() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_CONTACTS)) {
+            }
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_PERMISSIONS_REQUEST);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        // Make sure it's our original READ_CONTACTS request
+        if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getActivity(), "Read Contacts permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Read Contacts permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
         recyclerView.setAdapter(adapter);
@@ -298,7 +366,25 @@ public class FriendListFragment extends Fragment {
             holder.mIdView.setText(mValues.get(position).username);
             holder.mContentView.setText(mValues.get(position).phoneNumber);
             holder.mScoreView.setText(mValues.get(position).score+"");
-//
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //弹出好友习惯列表及相应得分
+                    builder = new AlertDialog.Builder(getActivity());
+                    alert = builder.setIcon(R.drawable.list)
+                            .setTitle(holder.mItem.username)
+                            .setMessage("habitlist")
+
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).create();
+                    alert.show();
+                    }
+
+            });
 
 
         }
@@ -329,6 +415,62 @@ public class FriendListFragment extends Fragment {
             }
         }
 
+        public  class CrimeParentViewHolder extends ParentViewHolder{
+            public TextView mCrimeTitleTextView;
+            public ImageButton mParentDropDownArrow;
+
+            public CrimeParentViewHolder(View itemView) {
+                super(itemView);
+                mCrimeTitleTextView = (TextView) itemView.findViewById(R.id.parent_list_item_crime_title_text_view);
+                mParentDropDownArrow = (ImageButton) itemView.findViewById(R.id.parent_list_item_expand_arrow);
+            }
+        }
+        public class CrimeChildViewHolder extends ChildViewHolder {
+
+            public TextView mCrimeDateText;
+            public Button mCrimeaddbutton;
+
+            public CrimeChildViewHolder(View itemView) {
+                super(itemView);
+                mCrimeDateText = (TextView) itemView.findViewById(R.id.child_list_item_crime_date_text_view);
+                mCrimeaddbutton = (Button) itemView.findViewById(R.id.child_list_item_crime_addbutton);
+            }
+        }
+
+
+        public class CrimeExpandableAdapter extends ExpandableRecyclerAdapter<CrimeParentViewHolder, CrimeChildViewHolder> {
+            LayoutInflater mInflator;
+            public CrimeExpandableAdapter(Context context, List> extends ParentListItem< parentItemList) {
+                super(parentItemList);
+                mInflator = LayoutInflater.from(context);
+            }
+            // onCreate ...
+            @Override
+            public CrimeParentViewHolder onCreateParentViewHolder(ViewGroup parentViewGroup) {
+                View view = mInflator.inflate(R.layout.list_item_crime_parent, viewGroup, false);
+                return new CrimeParentViewHolder(view);
+            }
+
+            @Override
+            public CrimeChildViewHolder onCreateChildViewHolder(ViewGroup childViewGroup) {
+                View view = mInflator.inflate(R.layout.list_item_crime_child, viewGroup, false);
+                return new CrimeChildViewHolder(view);
+            }
+
+            // onBind ...
+            @Override
+            public void onBindParentViewHolder(CrimeParentViewHolder crimeParentViewHolder, int i, Object parentObject) {
+                Contacts crime = (Contacts) parentObject;
+//                crimeParentViewHolder.mCrimeTitleTextView.setText(crime.getTitle());
+            }
+
+            @Override
+            public void onBindChildViewHolder(CrimeChildViewHolder crimeChildViewHolder, int i, Object childObject) {
+                Contacts contacts = (Contacts) childObject;
+//                crimeChildViewHolder.mCrimeDateText.setText(crimeChild.getDate().toString());
+//                crimeChildViewHolder.mCrimeaddbutton.setChecked(crimeChild.isSolved());
+            }
+        }
     }
 
 

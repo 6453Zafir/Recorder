@@ -54,16 +54,24 @@
 
         </LinearLayout>
 
+        <include layout="@layout/list_item_crime_parent"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"/>
+        <include layout="@layout/list_item_crime_child"
+            android:layout_width="fill_parent"
+            android:layout_height="50dp"/>
+
         <LinearLayout
+
             android:orientation="horizontal"
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:weightSum="1"
             android:baselineAligned="false">
 
-        <include layout="@layout/item_friend_list"
+            <include layout="@layout/item_friend_list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         </LinearLayout>
