@@ -1,6 +1,8 @@
 package com.tongji.android.recorder_app.Fragment;
 
 import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -37,6 +39,7 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.dd.morphingbutton.MorphingButton;
 import com.dd.morphingbutton.impl.IndeterminateProgressButton;
+import com.tongji.android.recorder_app.Activity.LoginActivity;
 import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Model.DateItem;
 import com.tongji.android.recorder_app.Model.DateList;
@@ -403,6 +406,11 @@ public class Punchcard extends Fragment {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 1, intent, 0);
         AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, calSet.getTimeInMillis(), pendingIntent);
+        setNotification(calSet.getTimeInMillis());
+    }
+
+    void setNotification(long time){
+
     }
 
 
@@ -584,6 +592,9 @@ public class Punchcard extends Fragment {
 
             HabitList.ITEMS.get(position).isChecked = true;
             HabitList.ITEMS.get(position).score++;
+            Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
+
+            getActivity().sendBroadcast(intent);
 
             NoSQL.with(getActivity()).using(Habit.class)
                     .bucketId("habit")
@@ -621,7 +632,7 @@ public class Punchcard extends Fragment {
                     morphToSuccess(button, position);
                     button.unblockTouch();
                 }
-            }, 4000);
+            }, 2000);
 
             button.blockTouch(); // prevent user from clicking while button is in progress
             button.morphToProgress(color, progressCornerRadius, width, height, duration, progressColor1, progressColor2,

@@ -146,8 +146,9 @@ public class FriendListFragment extends Fragment {
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     AsyncHttpClient client = new AsyncHttpClient();
                                                     RequestParams params = new RequestParams();
-                                                    params.add("phoneNumber","13661828533");
-                                                    params.add("addPhoneNumber","1234");
+                                                    MyApplication myapp = (MyApplication)getActivity().getApplication();
+                                                    params.add("phoneNumber",myapp.getPhoneNumber());
+                                                    params.add("addPhoneNumber",friendphoneNum);
                                                     client.post("http://lshunran.com:3000/recorder/add", params, new AsyncHttpResponseHandler() {
                                                         @Override
                                                         public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {

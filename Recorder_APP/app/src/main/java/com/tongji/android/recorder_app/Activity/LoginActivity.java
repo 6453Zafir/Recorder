@@ -32,11 +32,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
+import com.tongji.android.recorder_app.Model.Friend;
+import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.R;
 import com.umeng.analytics.MobclickAgent;
 
@@ -278,6 +282,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                             Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
                             myApp.setStatus(MyApplication.ONLINE);
                             myApp.setPhoneNumber(email);
+                            JSONArray friendjson = object.getJSONArray("friendList");
+                            for(int i=0;i<friendjson.length();i++){
+                                JSONObject friend  = friendjson.getJSONObject(i);
+                                String phone = friend.getString("phone");
+                                int score = friend.getInt("score");
+                                String username = friend.getString("username");
+                                Friend f = new Friend(phone,username,score);
+                                FriendList.addItem(f);
+                                NoSQLEntity<Friend> newfriend = new NoSQLEntity<Friend>("friend",f.phoneNumber);
+                                newfriend.setData(f);
+                                NoSQL.with(LoginActivity.this).using(Friend.class).save(newfriend);
+                            }
                             Intent it = new Intent(LoginActivity.this,MainActivity.class);
                             setResult(MainActivity.PREPARE_DATE_AFTER_LOGIN,it);
                             finish();

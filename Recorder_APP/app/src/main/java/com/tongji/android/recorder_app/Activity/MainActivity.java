@@ -1,6 +1,12 @@
 package com.tongji.android.recorder_app.Activity;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -73,6 +79,7 @@ import java.util.Objects;
 public class MainActivity extends ActionBarActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     public static final String RELOAD_DATA_FRAGMENT = "jason.broadcast.action";
+    public static final String ALERT = "alert";
     private boolean alert_exit= true;
     private ViewPager mPager;
     private SlidingTabLayout mTabs;
@@ -148,6 +155,7 @@ public class MainActivity extends ActionBarActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         initTabs();
+
         btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -174,6 +182,7 @@ public class MainActivity extends ActionBarActivity
        // initDB();
 
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -227,10 +236,7 @@ public class MainActivity extends ActionBarActivity
         DateItem[] d =new DateItem[]{dateitem,dateitem2,dateitem3};
         //Toast.makeText(this, DateList.ITEMS.get(0).getDate(0).getYear()+"",Toast.LENGTH_SHORT).show();
         Friend f = new Friend("13333333","zhangjunyi",82);
-        FriendList.addItem(f);
-        NoSQLEntity<Friend> friend = new NoSQLEntity<Friend>("friend",f.phoneNumber);
-        friend.setData(f);
-        NoSQL.with(this).using(Friend.class).save(friend);
+
         HabitList.addItem(h1);
         HabitList.addItem(h2);
         HabitList.addItem(h3);
