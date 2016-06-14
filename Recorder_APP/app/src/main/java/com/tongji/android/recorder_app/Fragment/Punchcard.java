@@ -1,5 +1,7 @@
 package com.tongji.android.recorder_app.Fragment;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -43,7 +45,7 @@ import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.Model.SystemDefaultHabit;
 import com.tongji.android.recorder_app.Model.SystemHabitList;
 import com.tongji.android.recorder_app.R;
-
+import com.tongji.android.recorder_app.Service.AlarmReceiver;
 
 
 import android.app.TimePickerDialog;
@@ -73,6 +75,8 @@ public class Punchcard extends Fragment {
     private String daytime ;
     private String duration ;
     private String degree ;
+    private int temphourOfDay;
+    private int tempminute;
 
 
 
@@ -204,6 +208,8 @@ public class Punchcard extends Fragment {
                                                             @Override
                                                             public void onTimeSet(TimePicker view, int hourOfDay,
                                                                                   int minute) {
+                                                                temphourOfDay=hourOfDay;
+                                                                tempminute=minute;
                                                                 daytime = hourOfDay + ":" + minute;
                                                                 //txtTime.setText(hourOfDay + ":" + minute);
                                                             }
@@ -262,16 +268,16 @@ public class Punchcard extends Fragment {
                                     Habit currentHabit = null;
                                     switch (spinnerItemString) {
                                         case "Date" :
-                                            currentHabit = new Habit("d1", charSequence.toString(), 0, 0,daytime);      //记得修改ID
+                                            currentHabit = new Habit("d1", charSequence.toString(), 0, Habit.TYPE_DATE,daytime);      //记得修改ID
                                             break;
                                         case "Degree" :
-                                            currentHabit = new Habit("d2", charSequence.toString(), 0, 1,degreeInput.getText().toString()+"times");      //记得修改ID
+                                            currentHabit = new Habit("d2", charSequence.toString(), 0, Habit.TYPE_DEGREE,degreeInput.getText().toString()+"times");      //记得修改ID
                                             break;
                                         case "Do or Not" :
-                                            currentHabit = new Habit("d3", charSequence.toString(), 0, 2,"");      //记得修改ID
+                                            currentHabit = new Habit("d3", charSequence.toString(), 0, Habit.TYPE_DOORNOT,"");      //记得修改ID
                                             break;
                                         case "Duration" :
-                                            currentHabit = new Habit("d4", charSequence.toString(), 0, 3,durationInput.getText().toString()+"minutes");      //记得修改ID
+                                            currentHabit = new Habit("d4", charSequence.toString(), 0, Habit.TYPE_DURATION,durationInput.getText().toString()+"minutes");      //记得修改ID
                                             break;
                                         default :
                                             break;
@@ -300,6 +306,10 @@ public class Punchcard extends Fragment {
                                         HabitList.addItem(currentHabit);
                                         DateItem dateItem = new DateItem(currentHabit.type,currentHabit.id);
                                         DateList.addItem(dateItem.type,dateItem);
+                                        Toast.makeText(getActivity(),temphourOfDay+" "+tempminute,Toast.LENGTH_SHORT).show();
+                                        if(currentHabit.type == currentHabit.TYPE_DATE){
+                                            setAlarm();
+                                        }
                                         //通知服务器并且加入到本地数据库里面，往下写
                                     }
 
@@ -330,6 +340,10 @@ public class Punchcard extends Fragment {
                                 HabitList.addItem(temp.get(i));
                                 DateItem dateItem = new DateItem(temp.get(i).type,temp.get(i).id);
                                 DateList.addItem(dateItem.type,dateItem);
+                                if(temp.get(i).type == Habit.TYPE_DATE){
+                                    setAlarm();
+                                }
+
                             }
                         }
                         temp.clear();
@@ -337,7 +351,12 @@ public class Punchcard extends Fragment {
                         dialogGridViewAdapter.notifyDataSetChanged();
                         puncuGridViewAdapter.notifyDataSetChanged();
                         dialog.dismiss();
-                       // Toast.makeText(getActivity(),"Check OK",Toast.LENGTH_SHORT).show();
+
+
+
+
+
+            // Toast.makeText(getActivity(),"Check OK",Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
 
                         getActivity().sendBroadcast(intent);
@@ -367,6 +386,23 @@ public class Punchcard extends Fragment {
         });
 
         return view;
+    }
+    private void setAlarm(){
+
+        Calendar calNow = Calendar.getInstance(Locale.getDefault());
+        Calendar calSet = (Calendar) calNow.clone();
+        calSet.set(Calendar.HOUR_OF_DAY, temphourOfDay);
+        calSet.set(Calendar.MINUTE, tempminute);
+        calSet.set(Calendar.SECOND, 0);
+        calSet.set(Calendar.MILLISECOND, 0);
+        if(calSet.compareTo(calNow) <= 0){
+            calSet.add(Calendar.DATE, 1);
+        }
+        Toast.makeText(getActivity(),temphourOfDay+" "+tempminute,Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getActivity(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(), 1, intent, 0);
+        AlarmManager alarmManager = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.set(AlarmManager.RTC_WAKEUP, calSet.getTimeInMillis(), pendingIntent);
     }
 
 

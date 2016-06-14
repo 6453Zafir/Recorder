@@ -9,6 +9,10 @@ import java.util.List;
  */
 public class Habit implements Serializable {
 
+    public static int TYPE_DATE = 0;
+    public static int TYPE_DURATION = 3;
+    public static int TYPE_DOORNOT = 2;
+    public static int TYPE_DEGREE = 1;
     public  String id;
     public  String habitName;
 

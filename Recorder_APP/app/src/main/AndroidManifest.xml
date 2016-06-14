@@ -31,6 +31,7 @@
         <activity android:name=".Login" />
         <activity android:name=".Signup" />
         <activity android:name=".Rankinglist" />
+        <receiver android:name=".Service.AlarmReceiver" android:process=":remote"/>
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
