@@ -171,7 +171,7 @@ public class MainActivity extends ActionBarActivity
                             .bucketId("date")
                             .delete();
                     NoSQL.with(MainActivity.this).using(Friend.class)
-                            .bucketId("Friend")
+                            .bucketId("friend")
                             .delete();
                     setOffline();
                 }
@@ -206,51 +206,51 @@ public class MainActivity extends ActionBarActivity
 
     //模拟习惯数据
     private void initDB(int status) {
-
-        Calendar c =  Calendar.getInstance(Locale.getDefault());
-        Habit h1= new Habit(1+"","Reading",0,Habit.TYPE_DURATION,"180 minutes");
-        DateItem dateitem = new DateItem(h1.type,h1.id);
-        c.set(2016,6,4);
-        dateitem.addDate(c.getTime());
-        c.set(2016,6,3);
-        dateitem.addDate(c.getTime());
-
-        DateList.addItem(1, dateitem);
-        Habit h2= new Habit(2+"","lunch",0,Habit.TYPE_DOORNOT,"");
-        DateItem dateitem2 = new DateItem(h2.type,h2.id);
-        c.set(2016,6,2);
-        dateitem2.addDate(c.getTime());
-
-        c.set(2016,6,1);
-        dateitem2.addDate(c.getTime());
-        DateList.addItem(2, dateitem2);
-        Habit h3= new Habit(3+"","Drink",0,3,"8 times");
-        DateItem dateitem3 = new DateItem(h3.type,h3.id);
-        c.set(2016,6,6);
-        dateitem3.addDate(c.getTime());
-
-        c.set(2016,6,7);
-        dateitem3.addDate(c.getTime());
-        DateList.addItem(3, dateitem3);
-        Habit[] h = new Habit[]{h1,h2,h3};
-        DateItem[] d =new DateItem[]{dateitem,dateitem2,dateitem3};
-        //Toast.makeText(this, DateList.ITEMS.get(0).getDate(0).getYear()+"",Toast.LENGTH_SHORT).show();
-        Friend f = new Friend("13333333","zhangjunyi",82);
-
-        HabitList.addItem(h1);
-        HabitList.addItem(h2);
-        HabitList.addItem(h3);
-        for(int i =0;i<h.length;i++){
-            NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h[i].id+"");
-            entity.setData(h[i]);
-            NoSQL.with(this).using(Habit.class).save(entity);
-        }
-        
-        for(int i =0;i<d.length;i++){
-            NoSQLEntity<DateItem> entity = new NoSQLEntity<DateItem>("date",d[i].type+"+"+d[i].id);
-            entity.setData(d[i]);
-            NoSQL.with(this).using(DateItem.class).save(entity);
-        }
+//
+//        Calendar c =  Calendar.getInstance(Locale.getDefault());
+//        Habit h1= new Habit(1+"","Reading",0,Habit.TYPE_DURATION,"180 minutes");
+//        DateItem dateitem = new DateItem(h1.type,h1.id);
+//        c.set(2016,6,4);
+//        dateitem.addDate(c.getTime());
+//        c.set(2016,6,3);
+//        dateitem.addDate(c.getTime());
+//
+//        DateList.addItem(1, dateitem);
+//        Habit h2= new Habit(2+"","lunch",0,Habit.TYPE_DOORNOT,"");
+//        DateItem dateitem2 = new DateItem(h2.type,h2.id);
+//        c.set(2016,6,2);
+//        dateitem2.addDate(c.getTime());
+//
+//        c.set(2016,6,1);
+//        dateitem2.addDate(c.getTime());
+//        DateList.addItem(2, dateitem2);
+//        Habit h3= new Habit(3+"","Drink",0,3,"8 times");
+//        DateItem dateitem3 = new DateItem(h3.type,h3.id);
+//        c.set(2016,6,6);
+//        dateitem3.addDate(c.getTime());
+//
+//        c.set(2016,6,7);
+//        dateitem3.addDate(c.getTime());
+//        DateList.addItem(3, dateitem3);
+//        Habit[] h = new Habit[]{h1,h2,h3};
+//        DateItem[] d =new DateItem[]{dateitem,dateitem2,dateitem3};
+//        //Toast.makeText(this, DateList.ITEMS.get(0).getDate(0).getYear()+"",Toast.LENGTH_SHORT).show();
+//        Friend f = new Friend("13333333","zhangjunyi",82);
+//
+//        HabitList.addItem(h1);
+//        HabitList.addItem(h2);
+//        HabitList.addItem(h3);
+//        for(int i =0;i<h.length;i++){
+//            NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h[i].id+"");
+//            entity.setData(h[i]);
+//            NoSQL.with(this).using(Habit.class).save(entity);
+//        }
+//
+//        for(int i =0;i<d.length;i++){
+//            NoSQLEntity<DateItem> entity = new NoSQLEntity<DateItem>("date",d[i].type+"+"+d[i].id);
+//            entity.setData(d[i]);
+//            NoSQL.with(this).using(DateItem.class).save(entity);
+//        }
         Intent intent = new Intent(RELOAD_DATA_FRAGMENT);
 
         sendBroadcast(intent);
@@ -268,10 +268,10 @@ public class MainActivity extends ActionBarActivity
         FriendList.ITEMS.clear();
 
         FriendList.ITEM_MAP.clear();
-        for(int i=0;i<10;i++){
-            Friend f = new Friend("15316373836"+i,"张君义"+i,(int)(Math.random()*100)+1);
-            FriendList.addItem(f);
-        }
+//        for(int i=0;i<10;i++){
+//            Friend f = new Friend("15316373836"+i,"张君义"+i,(int)(Math.random()*100)+1);
+//            FriendList.addItem(f);
+//        }
         NoSQL.with(this).using(DateItem.class)
                 .bucketId("date")
                 .retrieve(new RetrievalCallback<DateItem>() {
@@ -300,6 +300,24 @@ public class MainActivity extends ActionBarActivity
 //                                for(int j=0;j<HabitList.ITEMS.size();j++){
 //                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
                             HabitList.addItem(currentBean);
+//                                    }
+//                                }
+                        }
+                        //adapter.notifyDataSetChanged();
+                    }
+
+
+                });
+        NoSQL.with(this).using(Friend.class)
+                .bucketId("friend")
+                .retrieve(new RetrievalCallback<Friend>() {
+                    @Override
+                    public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
+                        for(int i = 0;i<noSQLEntities.size();i++){
+                            Friend currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
+//                                for(int j=0;j<HabitList.ITEMS.size();j++){
+//                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+                            FriendList.addItem(currentBean);
 //                                    }
 //                                }
                         }

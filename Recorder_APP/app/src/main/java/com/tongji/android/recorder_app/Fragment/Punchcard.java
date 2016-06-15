@@ -39,8 +39,12 @@ import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.dd.morphingbutton.MorphingButton;
 import com.dd.morphingbutton.impl.IndeterminateProgressButton;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.tongji.android.recorder_app.Activity.LoginActivity;
 import com.tongji.android.recorder_app.Activity.MainActivity;
+import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Model.DateItem;
 import com.tongji.android.recorder_app.Model.DateList;
 import com.tongji.android.recorder_app.Model.Habit;
@@ -52,11 +56,17 @@ import com.tongji.android.recorder_app.Service.AlarmReceiver;
 
 
 import android.app.TimePickerDialog;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.Locale;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cz.msebera.android.httpclient.Header;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,6 +90,7 @@ public class Punchcard extends Fragment {
     private String degree ;
     private int temphourOfDay;
     private int tempminute;
+    private  MyApplication myapp;
 
 
 
@@ -124,6 +135,7 @@ public class Punchcard extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         temp = new ArrayList<Habit>();
+        myapp = (MyApplication)getActivity().getApplication();
     }
 
 
@@ -306,14 +318,52 @@ public class Punchcard extends Fragment {
                                         }).setTitle("Habit already exists!").create().show();
 
                                     } else {
-                                        HabitList.addItem(currentHabit);
-                                        DateItem dateItem = new DateItem(currentHabit.type,currentHabit.id);
-                                        DateList.addItem(dateItem.type,dateItem);
-                                        Toast.makeText(getActivity(),temphourOfDay+" "+tempminute,Toast.LENGTH_SHORT).show();
-                                        if(currentHabit.type == currentHabit.TYPE_DATE){
-                                            setAlarm();
-                                        }
-                                        //通知服务器并且加入到本地数据库里面，往下写
+                                        AsyncHttpClient client = new AsyncHttpClient();
+                                        RequestParams params = new RequestParams();
+
+                                        params.add("phoneNumber",myapp.getPhoneNumber());
+                                        params.add("catalog",currentHabit.type+"");
+                                        params.add("feature",currentHabit.feature);
+                                        params.add("name",currentHabit.habitName);
+
+                                        final Habit finalCurrentHabit = currentHabit;
+                                        client.post("http://lshunran.com:3000/recorder/addhabit", params, new AsyncHttpResponseHandler() {
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                                String re = new String(responseBody);
+                                                try {
+                                                    JSONObject object = new JSONObject(re);
+                                                    int errCode = object.getInt("errCode");
+                                                    if (errCode == 0) {
+
+                                                        Toast.makeText(getActivity(),temphourOfDay+" "+tempminute,Toast.LENGTH_SHORT).show();
+                                                        if(finalCurrentHabit.type == finalCurrentHabit.TYPE_DATE){
+                                                            setAlarm();
+                                                        }
+                                                        //通知服务器并且加入到本地数据库里面，往下写
+                                                        finalCurrentHabit.id = object.getString("id");
+                                                        HabitList.addItem(finalCurrentHabit);
+                                                        DateItem dateItem = new DateItem(finalCurrentHabit.type, finalCurrentHabit.id);
+                                                        DateList.addItem(dateItem.type,dateItem);
+                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",finalCurrentHabit.id);
+                                                        entity.setData(finalCurrentHabit);
+                                                        NoSQL.with(getActivity()).using(Habit.class).save(entity);
+                                                        NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",dateItem.type+"+"+dateItem.id);
+                                                        entity2.setData(dateItem);
+                                                        NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                                            }
+                                        });
+
                                     }
 
                                     dialog.dismiss();
@@ -340,12 +390,46 @@ public class Punchcard extends Fragment {
                     public void onClick(DialogInterface dialog, int which) {
                         if(temp!=null){
                             for(int i=0;i<temp.size();i++){
-                                HabitList.addItem(temp.get(i));
-                                DateItem dateItem = new DateItem(temp.get(i).type,temp.get(i).id);
-                                DateList.addItem(dateItem.type,dateItem);
-                                if(temp.get(i).type == Habit.TYPE_DATE){
-                                    setAlarm();
-                                }
+                                AsyncHttpClient client = new AsyncHttpClient();
+                                RequestParams params = new RequestParams();
+
+                                params.add("phoneNumber",myapp.getPhoneNumber());
+                                params.add("catalog",temp.get(i).type+"");
+                                params.add("feature",temp.get(i).feature);
+                                params.add("name",temp.get(i).habitName);
+                                final int finalI = i;
+                                client.post("http://lshunran.com:3000/recorder/addhabit", params, new AsyncHttpResponseHandler() {
+                                            @Override
+                                            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                                                String re = new String(responseBody);
+                                                try {
+                                                    JSONObject object = new JSONObject(re);
+                                                    int errCode = object.getInt("errCode");
+                                                    if (errCode == 0) {
+                                                        temp.get(finalI).id = object.getString("id");
+                                                        HabitList.addItem(temp.get(finalI));
+                                                        DateItem dateItem = new DateItem(temp.get(finalI).type,temp.get(finalI).id);
+                                                        DateList.addItem(dateItem.type,dateItem);
+                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",temp.get(finalI).id);
+                                                        entity.setData(temp.get(finalI));
+                                                        NoSQL.with(getActivity()).using(Habit.class).save(entity);
+                                                        NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",dateItem.type+"+"+dateItem.id);
+                                                        entity2.setData(dateItem);
+                                                        NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+
+                                                    }
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                                            }
+                                        });
+
+
 
                             }
                         }
@@ -524,7 +608,6 @@ public class Punchcard extends Fragment {
 
             final IndeterminateProgressButton btnMorph1 = (IndeterminateProgressButton) convertView.findViewById(R.id.btnMorph1);
             if (HabitList.ITEMS.get(position).isChecked) {
-               // Toast.makeText(getActivity(),"放大法萨芬", Toast.LENGTH_SHORT).show();
                 morphAlreadySuccess(btnMorph1);
             }else {
                 morphToSquare(btnMorph1, 0);
@@ -572,7 +655,7 @@ public class Punchcard extends Fragment {
             btnMorph.morph(circle);
 
         }
-        private void morphToSuccess(final IndeterminateProgressButton btnMorph ,int position) {
+        private void morphToSuccess(final IndeterminateProgressButton btnMorph , final int position) {
             MorphingButton.Params circle = MorphingButton.Params.create()
                     .duration(integer(R.integer.mb_animation))
                     .cornerRadius(dimen(R.dimen.mb_height_56))
@@ -582,35 +665,65 @@ public class Punchcard extends Fragment {
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
-            Calendar c = Calendar.getInstance(Locale.getDefault());
+            final Calendar c = Calendar.getInstance(Locale.getDefault());
             int year = c.get(Calendar.YEAR);
             int month = c.get(Calendar.MONTH)+1;
             int day = c.get(Calendar.DAY_OF_MONTH);
             //Toast.makeText(getActivity(),year+" "+month+" "+day+":"+type+" "+id,Toast.LENGTH_SHORT).show();
             c.set(year,month,day);
-            DateList.ITEMS.get(position).addDate(c.getTime());
+            int sco = HabitList.ITEMS.get(position).score+1;
+            String dateStr = year+"/"+month+"/"+day;
+            AsyncHttpClient client = new AsyncHttpClient();
+            RequestParams params = new RequestParams();
 
-            HabitList.ITEMS.get(position).isChecked = true;
-            HabitList.ITEMS.get(position).score++;
-            Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
+            params.add("phoneNumber",myapp.getPhoneNumber());
+            params.add("id", HabitList.ITEMS.get(position).id);
+            params.add("score",sco+"");
+            params.add("date",dateStr);
 
-            getActivity().sendBroadcast(intent);
+            client.post("http://lshunran.com:3000/recorder/updatehabit", params, new AsyncHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    String re = new String(responseBody);
+                    try {
+                        JSONObject object = new JSONObject(re);
+                        int errCode = object.getInt("errCode");
+                        if (errCode == 0) {
+                            DateList.ITEMS.get(position).addDate(c.getTime());
 
-            NoSQL.with(getActivity()).using(Habit.class)
-                    .bucketId("habit")
-                    .entityId(HabitList.ITEMS.get(position).id)
-                    .delete();
-            NoSQL.with(getActivity()).using(DateItem.class)
-                    .bucketId("date")
-                    .entityId(type+"+"+id)
-                    .delete();
+                            HabitList.ITEMS.get(position).isChecked = true;
+                            HabitList.ITEMS.get(position).score++;
+                            Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
 
-            NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",HabitList.ITEMS.get(position).id);
-            entity.setData(HabitList.ITEMS.get(position));
-            NoSQL.with(getActivity()).using(Habit.class).save(entity);
-            NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",type+"+"+id);
-            entity2.setData(DateList.ITEMS.get(position));
-            NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+                            getActivity().sendBroadcast(intent);
+
+                            NoSQL.with(getActivity()).using(Habit.class)
+                                    .bucketId("habit")
+                                    .entityId(HabitList.ITEMS.get(position).id)
+                                    .delete();
+                            NoSQL.with(getActivity()).using(DateItem.class)
+                                    .bucketId("date")
+                                    .entityId(type+"+"+id)
+                                    .delete();
+
+                            NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",HabitList.ITEMS.get(position).id);
+                            entity.setData(HabitList.ITEMS.get(position));
+                            NoSQL.with(getActivity()).using(Habit.class).save(entity);
+                            NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",type+"+"+id);
+                            entity2.setData(DateList.ITEMS.get(position));
+                            NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                }
+            });
+
         }
 
 
