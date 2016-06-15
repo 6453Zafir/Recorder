@@ -89,7 +89,7 @@ public class MainActivity extends ActionBarActivity
     private TextView nickname;
     private MyApplication myApp;
     private Habit firstBean;
-
+    private Calendar c;
 
     public static final int PREPARE_DATE_AFTER_LOGIN = 1;
 
@@ -132,6 +132,7 @@ public class MainActivity extends ActionBarActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        c =  Calendar.getInstance(Locale.getDefault());
         loadRanking();
         myApp = (MyApplication) getApplication();
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -299,6 +300,13 @@ public class MainActivity extends ActionBarActivity
                             Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
 //                                for(int j=0;j<HabitList.ITEMS.size();j++){
 //                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+                            DateItem d =DateList.ITEM_MAP.get(currentBean.type+currentBean.id);
+                            for(int j=0;j<d.getDateSize();j++){
+                                if(c.getTime().getDate() == d.getDate(j).getDate()){    //待完善
+                                    currentBean.isChecked=true;
+                                    break;
+                                }
+                            }
                             HabitList.addItem(currentBean);
 //                                    }
 //                                }

@@ -308,16 +308,14 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 String habitname = habit.getString("name");
                                 int score = habit.getInt("score");
                                 Habit h= new Habit(habitId,habitname,score,catalog,feature);
-                                HabitList.addItem(h);
-                                NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h.id);
-                                entity.setData(h);
-                                NoSQL.with(LoginActivity.this).using(Habit.class).save(entity);
+
+
                                 DateItem dateitem = new DateItem(h.type,h.id);
 
                                 if(!habit.getString("date").equals("null")){
                                     JSONArray datejson = habit.getJSONArray("date");
                                     for(int j = 0;j<datejson.length();j++){
-                                        String date = datejson.getString(i);
+                                        String date = datejson.getString(j);
                                         String [] temp = null;
                                         temp = date.split("/");
                                         int year = Integer.parseInt(temp[0]);
@@ -328,12 +326,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
                                         c.set(year,month,day);
                                         dateitem.addDate(c.getTime());
+                                        if(c.getTime().getDate() == day){    //待完善
+                                            h.isChecked=true;
+
+                                        }
 
                                     }
                                     NoSQLEntity<DateItem> entity1 = new NoSQLEntity<DateItem>("date",dateitem.type+"+"+dateitem.id);
                                     entity1.setData(dateitem);
                                     NoSQL.with(LoginActivity.this).using(DateItem.class).save(entity1);
                                 }
+                                HabitList.addItem(h);
+                                NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h.id);
+                                entity.setData(h);
+                                NoSQL.with(LoginActivity.this).using(Habit.class).save(entity);
                                 DateList.addItem(0, dateitem);
 
                             }
