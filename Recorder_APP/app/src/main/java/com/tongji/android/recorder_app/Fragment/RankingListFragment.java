@@ -158,7 +158,7 @@ public class RankingListFragment extends Fragment {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).phoneNumber);
             holder.mContentView.setText(mValues.get(position).username);
-            holder.mScore.setText(mValues.get(position).score + "");
+            holder.mScore.setText(mValues.get(position).score+"");
 
         }
 
