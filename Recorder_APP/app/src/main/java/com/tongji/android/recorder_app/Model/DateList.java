@@ -18,7 +18,7 @@ public class DateList {
 //        if(type == 0){
 
             ITEMS.add(item);
-            ITEM_MAP.put(item.type+item.id, item);
+            ITEM_MAP.put(item.type+"+"+item.id, item);
 //        }else if(type==1){
 //            ITEMS.add(item);
 //            ITEM_MAP.put(item.type, item);

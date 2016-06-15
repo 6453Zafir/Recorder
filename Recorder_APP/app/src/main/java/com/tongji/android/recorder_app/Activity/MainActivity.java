@@ -300,13 +300,16 @@ public class MainActivity extends ActionBarActivity
                             Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
 //                                for(int j=0;j<HabitList.ITEMS.size();j++){
 //                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
-                            DateItem d =DateList.ITEM_MAP.get(currentBean.type+currentBean.id);
-                            for(int j=0;j<d.getDateSize();j++){
-                                if(c.getTime().getDate() == d.getDate(j).getDate()){    //待完善
-                                    currentBean.isChecked=true;
-                                    break;
+                            DateItem d =DateList.ITEM_MAP.get(currentBean.type+"+"+currentBean.id);
+                            if(d!=null){
+                                for(int j=0;j<d.getDateSize();j++){
+                                    if(c.getTime().getDate() == d.getDate(j).getDate()){    //待完善
+                                        currentBean.isChecked=true;
+                                        break;
+                                    }
                                 }
                             }
+
                             HabitList.addItem(currentBean);
 //                                    }
 //                                }

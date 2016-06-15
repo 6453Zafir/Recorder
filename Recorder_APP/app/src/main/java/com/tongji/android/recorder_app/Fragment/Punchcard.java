@@ -564,7 +564,9 @@ public class Punchcard extends Fragment {
         }
     }
 
+    public void modifyHabit(){
 
+    }
 
     //打卡界面的gridview的适配器
     public class PuncuGridViewAdapter extends BaseAdapter {
@@ -598,6 +600,153 @@ public class Punchcard extends Fragment {
         public View getView(final int position, View convertView, ViewGroup parent) {
 //             mMorphCounter1[position] = 1;
             convertView = inflater.inflate(R.layout.punch_card_main_habit_view,null);
+            convertView.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View view) {
+
+                                                   final AlertDialog.Builder buttonBuilder = new AlertDialog.Builder(getActivity());
+
+                                                   final View addOwnHabitView = inflater.inflate(R.layout.add_user_own_habit, null);
+                                                   final TextView hintText = (TextView) addOwnHabitView.findViewById(R.id.hint_text);
+                                                   final EditText durationInput = (EditText) addOwnHabitView.findViewById(R.id.duration_input);
+                                                   final EditText degreeInput = (EditText) addOwnHabitView.findViewById(R.id.degree_input);
+                                                   final Button timePicker = (Button) addOwnHabitView.findViewById(R.id.time_picker);
+                                                   final EditText editText = (EditText) addOwnHabitView.findViewById(R.id.add_user_own_habit_EditText);
+                                                   final Spinner spinner = (Spinner)
+                                                           addOwnHabitView.findViewById(R.id.add_user_own_habit_spinner);
+
+                                                   ArrayAdapter<CharSequence> arrayAdapter =
+                                                           ArrayAdapter.createFromResource(
+                                                                   getActivity(), R.array.select_user_habit_type, android.R.layout.simple_spinner_item
+                                                           );
+                                                    editText.setText(HabitList.ITEMS.get(position).habitName);
+                                                   editText.setFocusable(false);
+                                                   arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                                   Habit h = HabitList.ITEMS.get(position);
+
+                                                   spinner.setAdapter(arrayAdapter);
+
+
+                                                   switch (h.type) {
+                                                       case 0:
+                                                           spinner.setSelection(0,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please choose time");
+                                                           timePicker.setVisibility(View.VISIBLE);
+                                                           timePicker.setOnClickListener(new View.OnClickListener() {
+                                                               @Override
+                                                               public void onClick(View v) {
+                                                                   final Calendar c = Calendar.getInstance();
+                                                                   int mHour = c.get(Calendar.HOUR_OF_DAY);
+                                                                   int mMinute = c.get(Calendar.MINUTE);
+
+                                                                   // Launch Time Picker Dialog
+                                                                   TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                                                                           new TimePickerDialog.OnTimeSetListener() {
+
+                                                                               @Override
+                                                                               public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                                     int minute) {
+                                                                                   temphourOfDay = hourOfDay;
+                                                                                   tempminute = minute;
+                                                                                   daytime = hourOfDay + ":" + minute;
+                                                                                   //txtTime.setText(hourOfDay + ":" + minute);
+                                                                               }
+                                                                           }, mHour, mMinute, false);
+                                                                   timePickerDialog.show();
+
+                                                               }
+                                                           });
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           break;
+                                                       case 1:
+                                                           spinner.setSelection(1,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please input times");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.VISIBLE);
+                                                           degreeInput.setText(h.feature);
+                                                           break;
+                                                       case 2:
+                                                           spinner.setSelection(2,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("It'a common habit");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           break;
+                                                       case 3:
+                                                           spinner.setSelection(3,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please input duration time");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.VISIBLE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           durationInput.setText(h.feature);
+                                                           break;
+                                                   }
+                                                   ;
+
+
+                                                   buttonBuilder.setView(addOwnHabitView).setPositiveButton("Modify", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+
+                                                           CharSequence charSequence = editText.getText();
+
+                                                           if (charSequence.toString().trim().equals("")) {
+                                                               AlertDialog.Builder ifNullBuilder = new AlertDialog.Builder(getActivity());
+                                                               ifNullBuilder.setTitle("You must enter habit name")
+                                                                       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                                                           @Override
+                                                                           public void onClick(DialogInterface dialog, int which) {
+                                                                               dialog.dismiss();
+                                                                           }
+                                                                       }).create().show();
+
+                                                           } else {
+
+                                                               switch (HabitList.ITEMS.get(position).type) {
+                                                                   case 0:
+                                                                       HabitList.ITEMS.get(position).feature = daytime;
+                                                                       setAlarm();
+                                                                       break;
+                                                                   case 1:
+                                                                       HabitList.ITEMS.get(position).feature = degreeInput.getText().toString();
+                                                                       break;
+                                                                   case 2:
+                                                                       HabitList.ITEMS.get(position).feature =  "";
+                                                                       break;
+                                                                   case 3:
+                                                                       HabitList.ITEMS.get(position).feature =  durationInput.getText().toString();
+                                                                       break;
+                                                                   default:
+                                                                       break;
+                                                               }
+
+
+                                                                notifyDataSetChanged();
+
+                                                               dialog.dismiss();
+                                                           }
+                                                       }
+                                                   }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+                                                           dialog.dismiss();
+                                                       }
+                                                   });
+
+
+                                                   buttonBuilder.create().show();
+                                               }
+                                           });
+
+
+
+
             Habit currentHabit = HabitList.ITEMS.get(position);
             type=currentHabit.type;
             id = currentHabit.id;
