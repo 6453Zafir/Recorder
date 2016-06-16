@@ -41,10 +41,10 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Test"
+        android:text="Add Own Habit"
         android:layout_below="@+id/add_custom_dialog_textView"
         android:id="@+id/add_custom_dialog_button"
-        android:background="@drawable/punch_card_add_custom_dialog_button"
+        android:textAllCaps="false"
         />
 
 </RelativeLayout>

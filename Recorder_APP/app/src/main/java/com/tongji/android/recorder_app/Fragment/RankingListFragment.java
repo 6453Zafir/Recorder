@@ -1,6 +1,10 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -11,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 
+import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Activity.dummy.FriendList;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendSort;
@@ -30,13 +35,20 @@ public class RankingListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static String RELOAD_RANKING = "reload_ranking_friendlist";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private boolean mTwoPane;
-
+    private SimpleItemRecyclerViewAdapter adapter;
+   private TextView firstName ;
+   private         TextView firstScore;
+   private TextView secondName;
+   private TextView secondScore;
+   private TextView thirdName ;
+   private         TextView thirdScore;
 
 
 
@@ -83,15 +95,34 @@ public class RankingListFragment extends Fragment {
         View recyclerView = v.findViewById(R.id.ranking_list);
 
 
-        TextView firstName = (TextView) v.findViewById(R.id.FirstName);
-        TextView firstScore = (TextView) v.findViewById(R.id.firstScore);
-        TextView secondName = (TextView) v.findViewById(R.id.secondName);
-        TextView secondScore = (TextView) v.findViewById(R.id.secondScore);
-        TextView thirdName = (TextView) v.findViewById(R.id.thirdName);
-        TextView thirdScore = (TextView) v.findViewById(R.id.thirdScore);
+        firstName = (TextView) v.findViewById(R.id.FirstName);
+        firstScore = (TextView) v.findViewById(R.id.firstScore);
+        secondName = (TextView) v.findViewById(R.id.secondName);
+        secondScore = (TextView) v.findViewById(R.id.secondScore);
+        thirdName = (TextView) v.findViewById(R.id.thirdName);
+        thirdScore = (TextView) v.findViewById(R.id.thirdScore);
         List<Friend> friends = new ArrayList<Friend>();
 
+        BuildUpRanking();
+
+        assert recyclerView != null;
+        adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
+        setupRecyclerView((RecyclerView) recyclerView);
+        if (v.findViewById(R.id.item_detail_container) != null) {
+            // The detail container view will be present only in the
+            // large-screen layouts (res/values-w900dp).
+            // If this view is present, then the
+            // activity should be in two-pane mode.
+            mTwoPane = true;
+        }
+        IntentFilter filter = new IntentFilter(RELOAD_RANKING);
+        getActivity().registerReceiver(broadcastReceiver, filter);
+        return v;
+    }
+
+    private void BuildUpRanking() {
         Collections.sort(com.tongji.android.recorder_app.Model.FriendList.ITEMS,new FriendSort());
+        FriendList.ITEMS.clear();
         for (int i = 0; i< com.tongji.android.recorder_app.Model.FriendList.ITEMS.size(); i++){
             if (i == 0){
                 firstName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).username);
@@ -106,27 +137,24 @@ public class RankingListFragment extends Fragment {
                 thirdScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).score+"");
             }
             else {
+
                 FriendList.addItem(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(i));
             }
         }
-
-
-
-
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
-        if (v.findViewById(R.id.item_detail_container) != null) {
-            // The detail container view will be present only in the
-            // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
-            mTwoPane = true;
-        }
-        return v;
-
     }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            adapter.notifyDataSetChanged();
+            BuildUpRanking();
+        }
+    };
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(FriendList.ITEMS));
+        recyclerView.setAdapter(adapter);
     }
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {

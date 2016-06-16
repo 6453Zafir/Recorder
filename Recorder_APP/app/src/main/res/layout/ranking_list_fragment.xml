@@ -38,7 +38,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="Juny1"
+                android:text=""
                 android:textColor="#ffffff"
                 android:gravity="center_vertical|right"
                 />
@@ -48,7 +48,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="100"
+                android:text=""
                 android:textColor="#ffffff"
                 android:gravity="center_vertical|right"
                 />
@@ -101,7 +101,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="thatGirl"
+                android:text=""
                 android:textColor="#000000"
                 android:gravity="center_vertical|right"
                 />
@@ -111,7 +111,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="99"
+                android:text=""
                 android:textColor="#000000"
                 android:background="@null"
                 android:editable="false"
@@ -151,7 +151,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="qiancs"
+                android:text=""
                 android:textColor="#000000"
                 android:gravity="center_vertical|right"
                 />
@@ -161,7 +161,7 @@
                 android:layout_height="50dp"
                 android:layout_weight="0.5"
                 android:textAlignment="center"
-                android:text="000"
+                android:text=""
                 android:textColor="#000000"
                 android:background="@null"
                 android:editable="false"

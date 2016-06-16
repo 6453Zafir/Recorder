@@ -8,6 +8,9 @@ import android.app.Application;
 public class MyApplication extends Application {
     public static int ONLINE = 1;
     public static int OFFLINE = 0;
+    private String tempHabitName;
+    private int status;
+    private String phoneNumber ;
 
     public String getPhoneNumber() {
         return phoneNumber;
@@ -17,7 +20,13 @@ public class MyApplication extends Application {
         this.phoneNumber = phoneNumber;
     }
 
-    private String phoneNumber ;
+    public String getTempHabitName() {
+        return tempHabitName;
+    }
+
+    public void setTempHabitName(String tempHabitName) {
+        this.tempHabitName = tempHabitName;
+    }
 
     public int getStatus() {
         return status;
@@ -27,7 +36,6 @@ public class MyApplication extends Application {
         this.status = status;
     }
 
-    private int status;
 
     @Override
     public void onCreate() {

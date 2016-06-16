@@ -9,12 +9,12 @@ import java.util.List;
  */
 public class DateItem  {
     public int type;
-    public int id;
+    public String id;
     private List<Date> date;
 
 
 
-    public DateItem(int type,int id) {
+    public DateItem(int type,String id) {
         this.id = id;
 
         this.type=type;

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Go to check when finish"
+        android:gravity="center"
+        android:id="@+id/btn"/>
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:numColumns="auto_fit"
+        android:id="@+id/punch_card_main_habit_gridView"
+
+        android:horizontalSpacing="5dp"
+        android:verticalSpacing="5dp"
+        />
+</LinearLayout>

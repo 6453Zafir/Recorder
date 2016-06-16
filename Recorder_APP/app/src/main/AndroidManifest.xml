@@ -5,14 +5,12 @@
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
-    <uses-sdk android:minSdkVersion="14" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <application
         android:name=".Application.MyApplication"
         android:allowBackup="true"
@@ -24,8 +22,6 @@
             android:name=".Activity.MainActivity"
             android:launchMode="singleTask"
             android:windowSoftInputMode="adjustPan|stateHidden">
-
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,6 +31,11 @@
         <activity android:name=".Login" />
         <activity android:name=".Signup" />
         <activity android:name=".Rankinglist" />
+
+        <receiver
+            android:name=".Service.AlarmReceiver"
+            android:enabled="true" />
+
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -85,6 +86,26 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activity.LoginActivity" />
         </activity>
+
+        <receiver
+            android:name=".Service.WidgetProvider">
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/mywidget_provider"
+                />
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+
+                <!-- GridWidgetProvider接收点击gridview的响应事件 -->
+                <action android:name="recorder.COLLECTION_VIEW_ACTION" />
+                <!-- GridWidgetProvider接收点击bt_refresh的响应事件 -->
+                <action android:name="recorder.BT_REFRESH_ACTION" />
+            </intent-filter>
+        </receiver>
+
+
+        <service
+            android:name=".Service.MyAppWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
 

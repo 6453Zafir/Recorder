@@ -18,7 +18,7 @@ public class SystemHabitList {
     public static Map<String, SystemDefaultHabit> ITEM_MAP = new HashMap<String, SystemDefaultHabit>();
 
     public static void addItem(SystemDefaultHabit item) {
-        if (ITEMS.contains(item) || HabitList.ITEMS.contains(new Habit(item.id,item.habitName,item.score,item.type))) {
+        if (ITEMS.contains(item) || HabitList.ITEMS.contains(new Habit(item.id,item.habitName,item.score,item.type,item.feature))) {
             ;
         }
         else {
@@ -34,16 +34,16 @@ public class SystemHabitList {
     }
 
     public static void initList() {
-        addItem(new SystemDefaultHabit(0,"Early Bed",0,3));
-        addItem(new SystemDefaultHabit(0,"Early Up",0,3));
-        addItem(new SystemDefaultHabit(0,"Build Up Body",0,4));
-        addItem(new SystemDefaultHabit(0,"Study",0,4));
-        addItem(new SystemDefaultHabit(0,"Smoke",0,3));
-        addItem(new SystemDefaultHabit(0,"Drunk",0,3));
-        addItem(new SystemDefaultHabit(0,"Play Game",0,3));
-        addItem(new SystemDefaultHabit(0,"Breakfast",0,1));
-        addItem(new SystemDefaultHabit(0,"Drink",0,2));
-        addItem(new SystemDefaultHabit(0,"Eat Word",0,2));
+        addItem(new SystemDefaultHabit(0+"","Early Bed",0,3,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Early Up",0,3,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Build Up Body",0,4,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Study",0,4,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Smoke",0,3,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Drunk",0,3,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Play Game",0,3,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Breakfast",0,1,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Drink",0,2,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Eat Word",0,2,"feature"));
         flag = true;
     }
 }
