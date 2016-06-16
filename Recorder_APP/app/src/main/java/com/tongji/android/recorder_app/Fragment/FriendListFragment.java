@@ -1,15 +1,22 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,6 +27,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
@@ -33,11 +41,16 @@ import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendList;
+import com.tongji.android.recorder_app.Model.Ingredient;
+import com.tongji.android.recorder_app.Model.Recipe;
 import com.tongji.android.recorder_app.R;
+import com.tongji.android.recorder_app.View.RecipeAdapter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
@@ -63,6 +76,10 @@ public class FriendListFragment extends Fragment {
     private boolean isFriendExist=false;
     private String friendphoneNum;
     private SimpleItemRecyclerViewAdapter adapter;
+    private RecipeAdapter mAdapter;
+    private Recipe contactsList;
+    private RecyclerView contactsView;
+    private List<Recipe> recipes;
 
     public FriendListFragment() {
         // Required empty public constructor
@@ -113,6 +130,7 @@ public class FriendListFragment extends Fragment {
         SerachFriendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 friendphoneNum = FriendPhoneNum.getText().toString();
                 if(!friendphoneNum.isEmpty()){
                     AsyncHttpClient client = new AsyncHttpClient();
@@ -160,17 +178,7 @@ public class FriendListFragment extends Fragment {
                                                                     NoSQLEntity<Friend>entity=new NoSQLEntity<Friend>("friend",friendphoneNum+"");
                                                                     entity.setData(mynewfriend);
                                                                     NoSQL.with(getActivity()).using(Friend.class).save(entity);
-//                                                                    NoSQL.with(getActivity()).using(Friend.class)
-//                                                                            .bucketId("friend")
-//                                                                            .retrieve(new RetrievalCallback<Friend>() {
-//                                                                                @Override
-//                                                                                public void retrievedResults(List<NoSQLEntity<Friend>> noSQLEntities) {
-//                                                                                    for(int i=0;i<noSQLEntities.size();i++){
-//                                                                                        Friend addfriend = noSQLEntities.get(i).getData();
-//                                                                                        FriendList.addItem(addfriend);
-//                                                                                    }
-//                                                                                }
-//                                                                            });
+//
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.success)
                                                                             .setTitle("Congratulations：")
@@ -266,10 +274,68 @@ public class FriendListFragment extends Fragment {
         assert recyclerView != null;
         adapter=new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
         setupRecyclerView((RecyclerView) recyclerView);
+
+
+        contactsView = (RecyclerView) v.findViewById(R.id.contactsView);
+        asynLoadContacts asynLoad = new asynLoadContacts();
+        asynLoad.execute();
+        IntentFilter filter = new IntentFilter(RankingListFragment.RELOAD_RANKING);
+        getActivity().registerReceiver(broadcastReceiver, filter);
+
         return v;
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(adapter);
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            adapter.notifyDataSetChanged();
+            //BuildUpRanking();
+        }
+    };
+
+    private class asynLoadContacts extends AsyncTask<Void,Void,Void>{
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            recipes = ReadAllContacts();
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            mAdapter = new RecipeAdapter(getActivity(), recipes);
+            mAdapter.setExpandCollapseListener(new ExpandableRecyclerAdapter.ExpandCollapseListener() {
+                @Override
+                public void onListItemExpanded(int position) {
+                    Recipe expandedRecipe = recipes.get(position);
+
+                }
+
+                @Override
+                public void onListItemCollapsed(int position) {
+                    Recipe collapsedRecipe = recipes.get(position);
+
+                }
+            });
+
+            contactsView.setAdapter(mAdapter);
+            contactsView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
     }
 
     public class SimpleItemRecyclerViewAdapter
@@ -325,6 +391,49 @@ public class FriendListFragment extends Fragment {
             }
         }
 
+    }
+
+    public List<Recipe> ReadAllContacts() {
+        Cursor cursor = this.getContext().getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,
+                null, null, null, null);
+        int contactIdIndex = 0;
+        int nameIndex = 0;
+        List<Ingredient> list = new ArrayList<Ingredient>();
+
+        if(cursor.getCount() > 0) {
+            contactIdIndex = cursor.getColumnIndex(ContactsContract.Contacts._ID);
+            nameIndex = cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME);
+        }
+        while(cursor.moveToNext()) {
+            String contactId = cursor.getString(contactIdIndex);
+            String name = cursor.getString(nameIndex);
+
+
+            /*
+             * 查找该联系人的phone信息
+             */
+            Cursor phones = this.getContext().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=" + contactId,
+                    null, null);
+            int phoneIndex = 0;
+            if (phones.getCount() > 0) {
+                phoneIndex = phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+            }
+            while (phones.moveToNext()) {
+                String phoneNumber = phones.getString(phoneIndex);
+                Ingredient singleFriend = new Ingredient(name, phoneNumber);
+                list.add(singleFriend);
+            }
+
+
+            contactsList = new Recipe("Your Contacts", list);
+            // mAdapter.notifyDataSetChanged();
+
+
+
+        }
+        return Arrays.asList(contactsList);
     }
 
 

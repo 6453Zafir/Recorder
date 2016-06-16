@@ -107,6 +107,9 @@
         <item>Do or Not</item>
         <item>Duration</item>
     </string-array>
+    <string name="collapsed">collapsed: %s</string>
+    <string name="expanded">expanded: %s</string>
+    <string name="arrow_contentDescription">Expand list item arrow</string>
 
 
 
