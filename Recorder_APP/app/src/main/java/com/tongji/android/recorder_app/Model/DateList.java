@@ -12,13 +12,13 @@ import java.util.Map;
 public class DateList {
     public static List<DateItem> ITEMS = new ArrayList<DateItem>();
 
-    public static Map<Integer, DateItem> ITEM_MAP = new HashMap<Integer, DateItem>();
+    public static Map<String, DateItem> ITEM_MAP = new HashMap<String, DateItem>();
 
     public static void addItem(int type,DateItem item) {
 //        if(type == 0){
 
             ITEMS.add(item);
-            ITEM_MAP.put(item.type, item);
+            ITEM_MAP.put(item.type+item.id, item);
 //        }else if(type==1){
 //            ITEMS.add(item);
 //            ITEM_MAP.put(item.type, item);

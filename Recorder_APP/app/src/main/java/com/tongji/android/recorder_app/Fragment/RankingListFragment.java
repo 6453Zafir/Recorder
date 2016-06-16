@@ -1,8 +1,10 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -12,15 +14,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
-import com.tongji.android.recorder_app.Activity.ItemListActivity;
-import com.tongji.android.recorder_app.Activity.dummy.DummyContent;
-import com.tongji.android.recorder_app.Activity.dummy.Friend;
+
+import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Activity.dummy.FriendList;
+import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendSort;
 import com.tongji.android.recorder_app.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,13 +35,20 @@ public class RankingListFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    public static String RELOAD_RANKING = "reload_ranking_friendlist";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
     private boolean mTwoPane;
-
+    private SimpleItemRecyclerViewAdapter adapter;
+   private TextView firstName ;
+   private         TextView firstScore;
+   private TextView secondName;
+   private TextView secondScore;
+   private TextView thirdName ;
+   private         TextView thirdScore;
 
 
 
@@ -89,40 +95,18 @@ public class RankingListFragment extends Fragment {
         View recyclerView = v.findViewById(R.id.ranking_list);
 
 
-        TextView firstName = (TextView) v.findViewById(R.id.FirstName);
-        TextView firstScore = (TextView) v.findViewById(R.id.firstScore);
-        TextView secondName = (TextView) v.findViewById(R.id.secondName);
-        TextView secondScore = (TextView) v.findViewById(R.id.secondScore);
-        TextView thirdName = (TextView) v.findViewById(R.id.thirdName);
-        TextView thirdScore = (TextView) v.findViewById(R.id.thirdScore);
+        firstName = (TextView) v.findViewById(R.id.FirstName);
+        firstScore = (TextView) v.findViewById(R.id.firstScore);
+        secondName = (TextView) v.findViewById(R.id.secondName);
+        secondScore = (TextView) v.findViewById(R.id.secondScore);
+        thirdName = (TextView) v.findViewById(R.id.thirdName);
+        thirdScore = (TextView) v.findViewById(R.id.thirdScore);
         List<Friend> friends = new ArrayList<Friend>();
-        for(int i=0;i<10;i++){
-            Friend f = new Friend("15316373836"+i,"张君义"+i,(int)(Math.random()*100)+1);
-            friends.add(f);
-        }
-        Collections.sort(friends,new FriendSort());
-        for (int i=0;i<friends.size();i++){
-            if (i == 0){
-                firstName.setText(friends.get(0).username);
-                firstScore.setText(friends.get(0).score+"");
-            }
-            else if(i == 1){
-                secondName.setText(friends.get(1).username);
-                secondScore.setText(friends.get(1).score+"");
-            }
-            else if (i == 2){
-                thirdName.setText(friends.get(2).username);
-                thirdScore.setText(friends.get(2).score+"");
-            }
-            else {
-                FriendList.addItem(friends.get(i));
-            }
-        }
 
-
-
+        BuildUpRanking();
 
         assert recyclerView != null;
+        adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
         setupRecyclerView((RecyclerView) recyclerView);
         if (v.findViewById(R.id.item_detail_container) != null) {
             // The detail container view will be present only in the
@@ -131,11 +115,46 @@ public class RankingListFragment extends Fragment {
             // activity should be in two-pane mode.
             mTwoPane = true;
         }
+        IntentFilter filter = new IntentFilter(RELOAD_RANKING);
+        getActivity().registerReceiver(broadcastReceiver, filter);
         return v;
-
     }
+
+    private void BuildUpRanking() {
+        Collections.sort(com.tongji.android.recorder_app.Model.FriendList.ITEMS,new FriendSort());
+        FriendList.ITEMS.clear();
+        for (int i = 0; i< com.tongji.android.recorder_app.Model.FriendList.ITEMS.size(); i++){
+            if (i == 0){
+                firstName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).username);
+                firstScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).score+"");
+            }
+            else if(i == 1){
+                secondName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).username);
+                secondScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).score+"");
+            }
+            else if (i == 2){
+                thirdName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).username);
+                thirdScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).score+"");
+            }
+            else {
+
+                FriendList.addItem(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(i));
+            }
+        }
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            adapter.notifyDataSetChanged();
+            BuildUpRanking();
+        }
+    };
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        recyclerView.setAdapter(new SimpleItemRecyclerViewAdapter(FriendList.ITEMS));
+        recyclerView.setAdapter(adapter);
     }
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
@@ -187,5 +206,12 @@ public class RankingListFragment extends Fragment {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEMS.clear();
+        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEM_MAP.clear();
     }
 }

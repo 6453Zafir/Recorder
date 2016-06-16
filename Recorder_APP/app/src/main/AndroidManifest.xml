@@ -20,7 +20,8 @@
         android:theme="@style/AppThemeMain">
         <activity
             android:name=".Activity.MainActivity"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan|stateHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,6 +31,11 @@
         <activity android:name=".Login" />
         <activity android:name=".Signup" />
         <activity android:name=".Rankinglist" />
+
+        <receiver
+            android:name=".Service.AlarmReceiver"
+            android:enabled="true" />
+
         <activity
             android:name=".Activity.LoginActivity"
             android:label="@string/title_activity_login"
@@ -80,6 +86,27 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Activity.LoginActivity" />
         </activity>
+
+        <receiver
+            android:name=".Service.WidgetProvider">
+            <meta-data android:name="android.appwidget.provider"
+                android:resource="@xml/mywidget_provider"
+                />
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+
+                <!-- GridWidgetProvider接收点击gridview的响应事件 -->
+                <action android:name="recorder.COLLECTION_VIEW_ACTION" />
+                <!-- GridWidgetProvider接收点击bt_refresh的响应事件 -->
+                <action android:name="recorder.BT_REFRESH_ACTION" />
+            </intent-filter>
+        </receiver>
+
+
+        <service
+            android:name=".Service.MyAppWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
     </application>
 
 </manifest>

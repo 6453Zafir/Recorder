@@ -192,7 +192,7 @@ public class Record extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).id+"");
+            holder.mIdView.setText(mValues.get(position).score+"");
             holder.mContentView.setText(mValues.get(position).habitName);
 
             holder.mView.setOnClickListener(new View.OnClickListener() {
@@ -211,7 +211,7 @@ public class Record extends Fragment {
                         Intent intent = new Intent(context, ItemDetailActivity.class);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, holder.mItem.id);
                         intent.putExtra(ItemDetailFragment.ARG_ITEM_TYPE, holder.mItem.type);
-                       // Toast.makeText(getActivity(),holder.mItem.id+" "+holder.mItem.type,Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(getActivity(),holder.mItem.id+" "+holder.mItem.type,Toast.LENGTH_SHORT).show();
                         context.startActivity(intent);
 
                     }

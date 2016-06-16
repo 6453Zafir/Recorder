@@ -20,6 +20,7 @@ import com.github.sundeepk.compactcalendarview.CompactCalendarView;
 import com.github.sundeepk.compactcalendarview.domain.Event;
 import com.tongji.android.recorder_app.Activity.ItemDetailActivity;
 import com.tongji.android.recorder_app.Activity.ItemListActivity;
+import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Model.DateItem;
 import com.tongji.android.recorder_app.Model.DateList;
 import com.tongji.android.recorder_app.Model.Habit;
@@ -54,6 +55,9 @@ public class ItemDetailFragment extends Fragment {
      */
     private Habit mItem;
     private DateItem dateItem;
+    private float intensity_per;
+    public static float INTENSITY;
+    public static final String HABIT_NAME = "";
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -66,6 +70,10 @@ public class ItemDetailFragment extends Fragment {
     public ItemDetailFragment() {
     }
 
+    public float getIntensity(){
+        return intensity_per;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,18 +84,20 @@ public class ItemDetailFragment extends Fragment {
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
             int type = getArguments().getInt(ARG_ITEM_TYPE);
-            int id = getArguments().getInt(ARG_ITEM_ID);
+            String id = getArguments().getString(ARG_ITEM_ID);
 
             for(int i =0;i< DateList.ITEMS.size();i++){
-                if(id==DateList.ITEMS.get(i).id && type == DateList.ITEMS.get(i).type){
+                if(id.equals(DateList.ITEMS.get(i).id) && type == DateList.ITEMS.get(i).type && DateList.ITEMS!=null){
                     dateItem = DateList.ITEMS.get(i);
                     break;
+                }else{
+                    //dateItem=
                 }
             }
 
 
             for(int i =0;i< HabitList.ITEMS.size();i++){
-                if(id==HabitList.ITEMS.get(i).id && type == HabitList.ITEMS.get(i).type){
+                if(id.equals(HabitList.ITEMS.get(i).id) && type == HabitList.ITEMS.get(i).type){
                     mItem = HabitList.ITEMS.get(i);
                     break;
                 }
@@ -98,6 +108,8 @@ public class ItemDetailFragment extends Fragment {
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.habitName);
+              //  HABIT_NAME = mItem.habitName;
+
             }
         }
     }
@@ -112,20 +124,28 @@ public class ItemDetailFragment extends Fragment {
         Calendar c =  Calendar.getInstance(Locale.getDefault());
         Date d = new Date();
         c.set(2016,6,d.getDate());
-        for(int i = dateItem.getDateSize()-1;i>=0;i--) {
+        if(dateItem !=  null){
+            for(int i = dateItem.getDateSize()-1;i>=0;i--) {
 
-            Date storedDateFromDB = dateItem.getDate(i);
+                Date storedDateFromDB = dateItem.getDate(i);
 
-            long mili = c.getTime().getTime()-storedDateFromDB.getTime();
-            long offset = TimeUnit.MILLISECONDS.toDays(mili);
-            if(offset>=0 && offset<=7){
-                intensity++;
-            }else {
-                break;
+                long mili = c.getTime().getTime()-storedDateFromDB.getTime();
+                long offset = TimeUnit.MILLISECONDS.toDays(mili);
+                if(offset>=0 && offset<=7){
+                    intensity++;
+                }else {
+                    break;
+                }
             }
         }
-        float intensity_per = intensity/7;
-        //Toast.makeText(getActivity(),intensity+" "+intensity_per+" ",Toast.LENGTH_SHORT).show();
+
+        intensity_per = intensity/7;
+        INTENSITY = intensity_per;
+
+        MyApplication myapp = (MyApplication)getActivity().getApplication();
+
+        myapp.setTempHabitName(mItem.habitName);
+
         ringView.setPercentage(intensity_per);
         ringView.setColor(R.color.colorPrimaryDark);
 
@@ -159,23 +179,26 @@ public class ItemDetailFragment extends Fragment {
     private void addEvents(CompactCalendarView compactCalendarView, DateItem dateItem) {
 //        currentCalender.setTime(new Date());
 //        currentCalender.set(Calendar.DAY_OF_MONTH, 1);
-        for(int i = 0;i<dateItem.getDateSize();i++){
-            Date storedDateFromDB = dateItem.getDate(i);
+        if(dateItem!=null){
+            for(int i = 0;i<dateItem.getDateSize();i++){
+                Date storedDateFromDB = dateItem.getDate(i);
 
-            int day = storedDateFromDB.getDate();
-            int mo = storedDateFromDB.getMonth()-1;
-            int year = storedDateFromDB.getYear()+1900;
+                int day = storedDateFromDB.getDate();
+                int mo = storedDateFromDB.getMonth()-1;
+                int year = storedDateFromDB.getYear()+1900;
 
-            currentCalender.set(year,mo,day);
-            //currentCalender.setTime(storedDateFromDB);
+                currentCalender.set(year,mo,day);
+                //currentCalender.setTime(storedDateFromDB);
 
-            setToMidnight(currentCalender);
-            long timeInMillis = currentCalender.getTimeInMillis();
+                setToMidnight(currentCalender);
+                long timeInMillis = currentCalender.getTimeInMillis();
 
-            List<Event> events = getEvents(timeInMillis, 1);
+                List<Event> events = getEvents(timeInMillis, 1);
 
-            compactCalendarView.addEvents(events);
+                compactCalendarView.addEvents(events);
+            }
         }
+
 
 
     }

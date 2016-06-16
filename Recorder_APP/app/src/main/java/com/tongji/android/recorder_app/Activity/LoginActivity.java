@@ -32,19 +32,30 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.colintmiller.simplenosql.NoSQL;
+import com.colintmiller.simplenosql.NoSQLEntity;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Application.SharedPreferrenceHelper;
+import com.tongji.android.recorder_app.Model.DateItem;
+import com.tongji.android.recorder_app.Model.DateList;
+import com.tongji.android.recorder_app.Model.Friend;
+import com.tongji.android.recorder_app.Model.FriendList;
+import com.tongji.android.recorder_app.Model.Habit;
+import com.tongji.android.recorder_app.Model.HabitList;
 import com.tongji.android.recorder_app.R;
 import com.umeng.analytics.MobclickAgent;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import cz.msebera.android.httpclient.Header;
@@ -246,9 +257,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 //            mAuthTask.execute((Void) null);
             AsyncHttpClient client = new AsyncHttpClient();
             RequestParams params = new RequestParams();
-            params.add("username",email);
+            params.add("phoneNumber",email);
             params.add("password",password);
-            client.post("http://qiancs.cn/MyChat/login.php", params,new AsyncHttpResponseHandler() {
+            client.post("http://lshunran.com:3000/recorder/login", params,new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onStart() {
@@ -260,15 +271,80 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     // called when response HTTP status is "200 OK"
                     String re = new String(response);
                     try {
-                        JSONObject object = new JSONObject(re);
-                        String status = object.getString("status");
-                        String nickname = object.getString("nickname");
+                        int status = 1;
+                        String nickname = null;
+                       // JSONArray array = new JSONArray(re);
+
+                            JSONObject object = new JSONObject(re);
+                            
+                            status = object.getInt("errCode");
+                             nickname = object.getString("username");
+                       // }
+
                         //String phone = object.getString("phone");
                         sh.save(email,password,nickname);
-                        if(status.equals("success")){
+                        if(status == 0){
+
+                            myApp.setStatus(MyApplication.ONLINE);
+                            myApp.setPhoneNumber(email);
+                            JSONArray friendjson = object.getJSONArray("friendList");
+                            for(int i=0;i<friendjson.length();i++){
+                                JSONObject friend  = friendjson.getJSONObject(i);
+                                String phone = friend.getString("phone");
+                                int score = friend.getInt("score");
+                                String username = friend.getString("username");
+                                Friend f = new Friend(phone,username,score);
+                                FriendList.addItem(f);
+                                NoSQLEntity<Friend> newfriend = new NoSQLEntity<Friend>("friend",f.phoneNumber);
+                                newfriend.setData(f);
+                                NoSQL.with(LoginActivity.this).using(Friend.class).save(newfriend);
+                            }
+                            JSONArray habitjson = object.getJSONArray("HabitList");
+                            for(int i =0;i<habitjson.length();i++){
+                                JSONObject habit = habitjson.getJSONObject(i);
+                                String habitId = habit.getString("habitId");
+                                int catalog = habit.getInt("catalog");
+                                String feature = habit.getString("feature");
+                                String habitname = habit.getString("name");
+                                int score = habit.getInt("score");
+                                Habit h= new Habit(habitId,habitname,score,catalog,feature);
+
+
+                                DateItem dateitem = new DateItem(h.type,h.id);
+
+                                if(!habit.getString("date").equals("null")){
+                                    JSONArray datejson = habit.getJSONArray("date");
+                                    for(int j = 0;j<datejson.length();j++){
+                                        String date = datejson.getString(j);
+                                        String [] temp = null;
+                                        temp = date.split("/");
+                                        int year = Integer.parseInt(temp[0]);
+                                        int month =  Integer.parseInt(temp[1]);
+                                        int day =  Integer.parseInt(temp[2]);
+                                        Calendar c =  Calendar.getInstance(Locale.getDefault());
+
+
+                                        c.set(year,month,day);
+                                        dateitem.addDate(c.getTime());
+                                        if(c.getTime().getDate() == day){    //待完善
+                                            h.isChecked=true;
+
+                                        }
+
+                                    }
+                                    NoSQLEntity<DateItem> entity1 = new NoSQLEntity<DateItem>("date",dateitem.type+"+"+dateitem.id);
+                                    entity1.setData(dateitem);
+                                    NoSQL.with(LoginActivity.this).using(DateItem.class).save(entity1);
+                                }
+                                HabitList.addItem(h);
+                                NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",h.id);
+                                entity.setData(h);
+                                NoSQL.with(LoginActivity.this).using(Habit.class).save(entity);
+                                DateList.addItem(0, dateitem);
+
+                            }
                             showProgress(false);
                             Toast.makeText(LoginActivity.this,"登陆成功，欢迎"+nickname,Toast.LENGTH_SHORT).show();
-                            myApp.setStatus(MyApplication.ONLINE);
                             Intent it = new Intent(LoginActivity.this,MainActivity.class);
                             setResult(MainActivity.PREPARE_DATE_AFTER_LOGIN,it);
                             finish();

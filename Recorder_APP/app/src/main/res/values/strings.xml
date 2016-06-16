@@ -95,4 +95,20 @@
     <string name="title_item_list">Items</string>
     <string name="title_item_detail">Item Detail</string>
     <string name="title_activity_register">register</string>
+
+    <string name="check">Check</string>
+    <integer name="mb_animation">500</integer>
+    <string name="mb_button">Button</string>
+
+
+    <string-array name="select_user_habit_type" >
+        <item>Date</item>
+        <item>Degree</item>
+        <item>Do or Not</item>
+        <item>Duration</item>
+    </string-array>
+
+
+
+
 </resources>
