@@ -117,6 +117,8 @@ public class RankingListFragment extends Fragment {
         }
         IntentFilter filter = new IntentFilter(RELOAD_RANKING);
         getActivity().registerReceiver(broadcastReceiver, filter);
+        IntentFilter filter1 = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
+        getActivity().registerReceiver(broadcastReceiver1,filter1);
         return v;
     }
 
@@ -151,6 +153,16 @@ public class RankingListFragment extends Fragment {
 
             adapter.notifyDataSetChanged();
             BuildUpRanking();
+        }
+    };
+    BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            adapter.notifyDataSetChanged();
+            //BuildUpRanking();
         }
     };
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {

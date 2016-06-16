@@ -175,6 +175,7 @@ public class MainActivity extends ActionBarActivity
                             .bucketId("friend")
                             .delete();
                     setOffline();
+                    resetAllCache();
                 }
 
             }
@@ -182,6 +183,20 @@ public class MainActivity extends ActionBarActivity
         
        // initDB();
 
+    }
+
+    private void resetAllCache(){
+        HabitList.ITEMS.clear();
+        HabitList.ITEM_MAP.clear();
+        DateList.ITEMS.clear();
+        DateList.ITEM_MAP.clear();
+        FriendList.ITEMS.clear();
+
+        FriendList.ITEM_MAP.clear();
+
+        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
+
+        sendBroadcast(intent);
     }
 
 

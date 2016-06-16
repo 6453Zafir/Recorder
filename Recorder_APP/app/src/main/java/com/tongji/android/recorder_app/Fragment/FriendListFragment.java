@@ -281,7 +281,8 @@ public class FriendListFragment extends Fragment {
         asynLoad.execute();
         IntentFilter filter = new IntentFilter(RankingListFragment.RELOAD_RANKING);
         getActivity().registerReceiver(broadcastReceiver, filter);
-
+        IntentFilter filter1 = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
+        getActivity().registerReceiver(broadcastReceiver1,filter1);
         return v;
     }
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -289,6 +290,16 @@ public class FriendListFragment extends Fragment {
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            adapter.notifyDataSetChanged();
+            //BuildUpRanking();
+        }
+    };
+    BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -433,6 +444,7 @@ public class FriendListFragment extends Fragment {
 
 
         }
+
         return Arrays.asList(contactsList);
     }
 

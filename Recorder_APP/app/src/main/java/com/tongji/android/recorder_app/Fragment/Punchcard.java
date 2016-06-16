@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -91,6 +93,7 @@ public class Punchcard extends Fragment {
     private int temphourOfDay;
     private int tempminute;
     private  MyApplication myapp;
+    PuncuGridViewAdapter puncuGridViewAdapter;
 
 
 
@@ -151,7 +154,7 @@ public class Punchcard extends Fragment {
         View view = inflater.inflate(R.layout.punch_card_fragment, container, false);
 
         GridView gridView = (GridView) view.findViewById(R.id.punch_card_main_habit_gridView);
-        final PuncuGridViewAdapter puncuGridViewAdapter = new PuncuGridViewAdapter(getActivity());
+        puncuGridViewAdapter = new PuncuGridViewAdapter(getActivity());
 
         gridView.setAdapter(puncuGridViewAdapter);
 
@@ -476,9 +479,20 @@ public class Punchcard extends Fragment {
 
             }
         });
-
+        IntentFilter filter = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
+        getActivity().registerReceiver(broadcastReceiver, filter);
         return view;
     }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            puncuGridViewAdapter.notifyDataSetChanged();
+        }
+    };
     private void setAlarm(){
 
         Calendar calNow = Calendar.getInstance(Locale.getDefault());
