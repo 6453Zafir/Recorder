@@ -282,6 +282,7 @@ public class MainActivity extends ActionBarActivity
                             DateItem currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
 //                                for(int j=0;j<HabitList.ITEMS.size();j++){
 //                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+
                             DateList.addItem(currentBean.type,currentBean);
 //                                    }
 //                                }
@@ -291,6 +292,7 @@ public class MainActivity extends ActionBarActivity
 
 
                 });
+
         NoSQL.with(this).using(Habit.class)
                 .bucketId("habit")
                 .retrieve(new RetrievalCallback<Habit>() {
@@ -300,14 +302,26 @@ public class MainActivity extends ActionBarActivity
                             Habit currentBean = noSQLEntities.get(i).getData(); // always check length of a list first...
 //                                for(int j=0;j<HabitList.ITEMS.size();j++){
 //                                    if(HabitList.ITEMS.get(j).id.equals(currentBean.id)){
+
                             DateItem d =DateList.ITEM_MAP.get(currentBean.type+"+"+currentBean.id);
+
+                            int now = c.getTime().getDate();
+                   //         Toast.makeText(MainActivity.this,now+"",Toast.LENGTH_SHORT).show();
                             if(d!=null){
+
                                 for(int j=0;j<d.getDateSize();j++){
-                                    if(c.getTime().getDate() == d.getDate(j).getDate()){    //待完善
+
+                           //         Toast.makeText(MainActivity.this,now+" "+d.getDate(j).getDate(),Toast.LENGTH_SHORT).show();
+                                    if(now == d.getDate(j).getDate()){    //待完善
                                         currentBean.isChecked=true;
                                         break;
                                     }
+                                    else if(j == d.getDateSize()-1){
+                                        currentBean.isChecked=false;
+                                    }
                                 }
+                            }else {
+                          //      Toast.makeText(MainActivity.this,"load error",Toast.LENGTH_SHORT).show();
                             }
 
                             HabitList.addItem(currentBean);

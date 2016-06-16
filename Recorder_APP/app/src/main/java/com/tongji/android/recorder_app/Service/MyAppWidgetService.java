@@ -60,6 +60,7 @@ public class MyAppWidgetService  extends RemoteViewsService {
             RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.item_widget_layout);
             Intent intent = new Intent(mContext,MainActivity.class);
 
+            //rv.setInt(R.id.itemLayout, "setBackgroundResource", R.color.transparent);
             PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
             rv.setOnClickPendingIntent(R.id.itemLayout,pendingIntent);
 

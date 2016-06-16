@@ -397,6 +397,7 @@ public class Punchcard extends Fragment {
                                 params.add("catalog",temp.get(i).type+"");
                                 params.add("feature",temp.get(i).feature);
                                 params.add("name",temp.get(i).habitName);
+                                final Habit temphabit =temp.get(i);
                                 final int finalI = i;
                                 client.post("http://lshunran.com:3000/recorder/addhabit", params, new AsyncHttpResponseHandler() {
                                             @Override
@@ -406,17 +407,21 @@ public class Punchcard extends Fragment {
                                                     JSONObject object = new JSONObject(re);
                                                     int errCode = object.getInt("errCode");
                                                     if (errCode == 0) {
-                                                        temp.get(finalI).id = object.getString("id");
-                                                        HabitList.addItem(temp.get(finalI));
-                                                        DateItem dateItem = new DateItem(temp.get(finalI).type,temp.get(finalI).id);
+                                                        temphabit.id = object.getString("id");
+                                                        HabitList.addItem(temphabit);
+                                                        DateItem dateItem = new DateItem(temphabit.type,temphabit.id);
                                                         DateList.addItem(dateItem.type,dateItem);
-                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",temp.get(finalI).id);
-                                                        entity.setData(temp.get(finalI));
+                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",temphabit.id);
+                                                        entity.setData(temphabit);
                                                         NoSQL.with(getActivity()).using(Habit.class).save(entity);
                                                         NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",dateItem.type+"+"+dateItem.id);
                                                         entity2.setData(dateItem);
                                                         NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+                                                        dialogGridViewAdapter.notifyDataSetChanged();
+                                                        puncuGridViewAdapter.notifyDataSetChanged();
+                                                        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
 
+                                                        getActivity().sendBroadcast(intent);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
