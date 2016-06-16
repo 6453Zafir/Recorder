@@ -4,7 +4,7 @@
 
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="180dp"
+    android:layout_height="150dp"
     android:layout_margin="8dp"
     android:layout_marginBottom="6dp"
     android:layout_marginRight="6dp"
@@ -21,39 +21,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center_horizontal"
-        >
+        android:weightSum="1"
+        android:padding="10dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
-            android:layout_margin="6dp"
-            android:orientation="horizontal"
-            android:layout_weight="3"
-            >
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="18dp"
+            android:gravity="end|center_vertical"
+            android:text="fdafew"
+            android:id="@+id/punch_card_main_habit_button_setting"
+            android:textColor="@color/positiveshine" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.6"
-                android:textSize="30dp"
-                android:text="fdsfas"
-                android:id="@+id/punch_card_main_habit_textView"
-                />
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:textSize="25dp"
+            android:text="fdsfas"
+            android:id="@+id/punch_card_main_habit_textView"
+            android:gravity="top"
+            android:textColor="@color/darkText" />
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.4"
-                android:gravity="end|center_vertical"
-                android:text="fdafew"
-                android:id="@+id/punch_card_main_habit_button_setting"
-                />
-
-
-        </LinearLayout>
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp">
+            android:layout_height="60dp">
 
             <com.dd.morphingbutton.impl.IndeterminateProgressButton
                 android:id="@+id/btnMorph1"
@@ -62,9 +52,6 @@
                 android:textColor="@color/whiteText"
                 android:layout_gravity="center"/>
         </FrameLayout>
-
-
-
 
 
     </LinearLayout>

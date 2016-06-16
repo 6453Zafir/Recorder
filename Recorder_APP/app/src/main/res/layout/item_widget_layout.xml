@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:id="@+id/itemLayout"
-    >
+    android:background="@drawable/tab_border">
 
 
 
@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:textSize="30dp"
+            android:textSize="20dp"
             android:text="fdsfas"
             android:id="@+id/punch_card_main_habit_textView"
             />

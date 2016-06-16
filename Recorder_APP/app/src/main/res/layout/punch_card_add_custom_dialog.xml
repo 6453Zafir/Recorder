@@ -26,27 +26,17 @@
         android:background="#fcfcfc"
         android:padding="10dp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#ffffff"
-        android:id="@+id/add_custom_dialog_textView"
-        android:gravity="center"
-        android:layout_below="@+id/add_custom_dialog_gridView"
-        android:text="Try to add Your own Habit"
-        android:textAllCaps="false"
-        />
-
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Own Habit"
-        android:layout_below="@+id/add_custom_dialog_textView"
+        android:text="Add Custom Habit"
         android:id="@+id/add_custom_dialog_button"
         android:textAllCaps="false"
-        android:background="@drawable/buttton_radious"
+        android:background="@drawable/tab_border"
         android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp" />
+        android:layout_marginRight="10dp"
+        android:layout_below="@+id/add_custom_dialog_gridView"
+        android:textSize="18sp" />
 
 </RelativeLayout>

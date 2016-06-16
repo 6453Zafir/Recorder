@@ -3,12 +3,16 @@
     <color name="colorPrimary">#227f7e</color>
     <color name="colorPrimaryDark">#213944</color>
     <color name="colorAccent">#93C571</color>
+    <color name="colorAccentLight">#c4ddb3</color>
 
-
+    <color name="positiveshine">#7ac5bb</color>
 
     <color name="positiveButton">#93C571</color>
-    <color name="DarkGreenButton">#227f7e</color>
+    <color name="DarkGreenButton">#5694aa</color>
+    <color name="DarkGreenButtonPressed">#367a92</color>
+
     <color name="negativeButton">#cb6257</color>
+    <color name="negativeButtonPressed">#bb473b</color>
 
     <color name="whiteBackground">#FFFFFF</color>
     <color name="lightBackground">#f3f3f3</color>
@@ -16,7 +20,7 @@
 
 
     <color name="whiteText">#FFFFFF</color>
-    <color name="darkText">#8a9ca0</color>
+    <color name="darkText">#8095a2</color>
     <color name="dotColor">#0085EF</color>
     <color name="circleBackground">#B0BEC5</color>
     <color name="mb_white">#ffffff</color>
@@ -30,10 +34,10 @@
     <color name="mb_red_dark">#ffcd3a3a</color>
     <color name="mb_gray">#ffdedede</color>
 
-    <color name="holo_blue_bright">#ff00ddff</color>
+    <color name="holo_blue_bright">#7ac5bb</color>
     <color name="holo_green_light">#ff99cc00</color>
-    <color name="holo_orange_light">#ffffbb33</color>
-    <color name="holo_red_light">#ffff4444</color>
+    <color name="holo_orange_light">#227f7e</color>
+    <color name="holo_red_light">#213944</color>
 
     <color name="transparent">#00000000</color>
 </resources>

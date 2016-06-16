@@ -219,11 +219,4 @@ public class RankingListFragment extends Fragment {
             }
         }
     }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEMS.clear();
-        com.tongji.android.recorder_app.Activity.dummy.FriendList.ITEM_MAP.clear();
-    }
 }

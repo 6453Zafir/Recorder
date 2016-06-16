@@ -32,7 +32,7 @@
 
             <EditText
                 android:id="@+id/friend_number"
-                android:layout_width="0dp"
+                android:layout_width="fill_parent"
                 android:layout_height="30dp"
                 android:inputType="numberSigned"
                 android:ems="10"
@@ -45,7 +45,7 @@
                 android:layout_weight="0.91" />
 
             <Button
-                android:layout_width="0dp"
+                android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:id="@+id/friend_search"
                 android:textSize="15sp"
@@ -63,7 +63,8 @@
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/contactsView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:padding="16dp" />
         </LinearLayout>
 
 

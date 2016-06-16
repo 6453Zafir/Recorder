@@ -171,42 +171,11 @@
     </LinearLayout>
 
 </LinearLayout>
+
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="250dp"
-        android:orientation="horizontal"
-        >
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.4"
-            android:textAlignment="center"
-            android:text="手 机 号"
-            android:textSize="15dp"/>
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:textAlignment="center"
-            android:text="昵  称"
-            android:textSize="15dp"
-        />
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="0.3"
-            android:textAlignment="center"
-            android:textSize="15dp"
-            android:text="分  数"/>
-
-
-    </LinearLayout>
-
-<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="280dp">
+    android:layout_marginTop="250dp">
     <include
         layout="@layout/ranking_list"
         android:layout_width="match_parent"

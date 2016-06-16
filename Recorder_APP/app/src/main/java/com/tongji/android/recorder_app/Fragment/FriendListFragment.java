@@ -133,12 +133,6 @@ public class FriendListFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        FriendList.ITEMS.clear();
-        FriendList.ITEM_MAP.clear();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

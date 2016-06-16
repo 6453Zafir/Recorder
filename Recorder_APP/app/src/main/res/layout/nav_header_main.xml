@@ -22,7 +22,8 @@
             android:layout_height="wrap_content"
             android:paddingTop="@dimen/nav_header_vertical_spacing"
             android:src="@android:drawable/sym_def_app_icon"
-            android:id="@+id/avatar" />
+            android:id="@+id/avatar"
+            android:scaleType="fitCenter" />
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -31,10 +32,12 @@
 
                 android:layout_gravity="center_vertical|right"
 
-                android:layout_width="wrap_content"
+                android:layout_width="87dp"
                 android:layout_height="wrap_content"
                 android:text="Login"
-                android:id="@+id/LogInOutBtn" />
+                android:id="@+id/LogInOutBtn"
+                android:background="@drawable/tab_border"
+                android:textColor="@color/colorPrimaryDark" />
         </FrameLayout>
 
     </LinearLayout>
