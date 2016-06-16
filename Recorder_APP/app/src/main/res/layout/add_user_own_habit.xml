@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:padding="8dp"
+    android:padding="16dp"
     android:layout_height="match_parent">
     
     <ImageView
@@ -24,12 +24,13 @@
             android:layout_gravity="center"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="Habit Type"/>
+            android:layout_weight="0.5"
+            android:text="Habit Type"
+            android:textSize="18sp" />
         <Spinner
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
+            android:layout_weight="0.5"
             android:id="@+id/add_user_own_habit_spinner"
             />
     </LinearLayout>
@@ -45,23 +46,33 @@
             android:id="@+id/hint_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Please choose:"/>
+            android:text="Please choose:"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="18sp" />
         <Button
             android:id="@+id/time_picker"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="alert time"/>
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableLeft="@drawable/ic_alarm_black_24dp"
+            android:text="alert time"
+            android:paddingLeft="120dp"
+            android:paddingRight="85dp"
+            android:background="@drawable/buttton_radious"
+            android:layout_marginTop="10dp" />
         <EditText
             android:id="@+id/duration_input"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Duration time (minutes)"/>
+            android:hint="Duration time (minutes)"
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:id="@+id/degree_input"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="how many times ?"/>
+            android:hint="how many times ?"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 
 

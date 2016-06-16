@@ -41,7 +41,6 @@ import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
 
-
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
@@ -478,6 +477,7 @@ public class FriendListFragment extends Fragment {
 
     }
 
+
     public List<Recipe> ReadAllContacts() {
         Cursor cursor = this.getContext().getContentResolver().query(ContactsContract.Contacts.CONTENT_URI,
                 null, null, null, null);
@@ -510,6 +510,7 @@ public class FriendListFragment extends Fragment {
                 Ingredient singleFriend = new Ingredient(name, phoneNumber);
                 list.add(singleFriend);
             }
+
 
 
             contactsList = new Recipe("Your Contacts", list);

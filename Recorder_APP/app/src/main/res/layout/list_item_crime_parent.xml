@@ -8,7 +8,7 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:textStyle="bold"
-        android:text="Crime Title" />
+        android:text="Contacts" />
 
     <ImageButton
         android:id="@+id/parent_list_item_expand_arrow"
