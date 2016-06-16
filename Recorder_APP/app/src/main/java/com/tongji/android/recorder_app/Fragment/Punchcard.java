@@ -784,10 +784,10 @@ public class Punchcard extends Fragment {
         private void morphToSquare(final IndeterminateProgressButton btnMorph, int duration) {
             MorphingButton.Params square = MorphingButton.Params.create()
                     .duration(duration)
-                    .cornerRadius(dimen(R.dimen.mb_corner_radius_2))
+                    .cornerRadius(dimen(R.dimen.mb_corner_radius_1))
                     .width(dimen(R.dimen.mb_width_100))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_blue))
+                    .color(color(R.color.colorAccent))
                     .colorPressed(color(R.color.mb_blue_dark))
                     .text(getString(R.string.check));
             btnMorph.morph(square);

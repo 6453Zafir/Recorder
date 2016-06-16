@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
+import com.bignerdranch.expandablerecyclerview.Model.ParentObject;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ChildViewHolder;
 import com.bignerdranch.expandablerecyclerview.ViewHolder.ParentViewHolder;
 import com.colintmiller.simplenosql.NoSQL;
@@ -440,20 +441,26 @@ public class FriendListFragment extends Fragment {
 
         public class CrimeExpandableAdapter extends ExpandableRecyclerAdapter<CrimeParentViewHolder, CrimeChildViewHolder> {
             LayoutInflater mInflator;
-            public CrimeExpandableAdapter(Context context, List> extends ParentListItem< parentItemList) {
-                super(parentItemList);
-                mInflator = LayoutInflater.from(context);
+            Context context;
+
+            public CrimeExpandableAdapter(Context context, List<ParentObject> parentItemList, int customParentAnimationViewId) {
+                super(context, parentItemList, customParentAnimationViewId);
             }
+
+//            public CrimeExpandableAdapter(Context context, List<ParentObject> parentItemList) {
+//                super(context, parentItemList);
+//            }
+
             // onCreate ...
             @Override
             public CrimeParentViewHolder onCreateParentViewHolder(ViewGroup parentViewGroup) {
-                View view = mInflator.inflate(R.layout.list_item_crime_parent, viewGroup, false);
+                View view = mInflator.inflate(R.layout.list_item_crime_parent, parentViewGroup, false);
                 return new CrimeParentViewHolder(view);
             }
 
             @Override
             public CrimeChildViewHolder onCreateChildViewHolder(ViewGroup childViewGroup) {
-                View view = mInflator.inflate(R.layout.list_item_crime_child, viewGroup, false);
+                View view = mInflator.inflate(R.layout.list_item_crime_child, childViewGroup, false);
                 return new CrimeChildViewHolder(view);
             }
 
