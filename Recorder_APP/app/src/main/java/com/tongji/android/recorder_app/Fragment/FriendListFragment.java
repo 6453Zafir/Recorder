@@ -55,12 +55,16 @@ import com.tongji.android.recorder_app.Application.MyApplication;
 import com.tongji.android.recorder_app.Model.Contacts;
 import com.tongji.android.recorder_app.Model.ContactsList;
 import com.tongji.android.recorder_app.Model.Friend;
+import com.tongji.android.recorder_app.Model.FriendHabit;
+import com.tongji.android.recorder_app.Model.FriendHabitList;
 import com.tongji.android.recorder_app.Model.FriendList;
+import com.tongji.android.recorder_app.Model.Habit;
 import com.tongji.android.recorder_app.Model.Ingredient;
 import com.tongji.android.recorder_app.Model.Recipe;
 import com.tongji.android.recorder_app.R;
 import com.tongji.android.recorder_app.View.RecipeAdapter;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -91,7 +95,8 @@ public class FriendListFragment extends Fragment {
     private boolean isFriendExist=false;
     private String friendphoneNum;
     private SimpleItemRecyclerViewAdapter adapter;
-
+    private FriendListAdapter friendListAdapter;
+    private View friend_habitlist_view;
     private RecipeAdapter mAdapter;
     private Recipe contactsList;
     private RecyclerView contactsView;
@@ -333,6 +338,10 @@ public class FriendListFragment extends Fragment {
        // adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
         recyclerView.setAdapter(adapter);
     }
+    private void setupFriendRecyclerView(@NonNull RecyclerView recyclerView) {
+        // adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
+        recyclerView.setAdapter(friendListAdapter);
+    }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
@@ -398,8 +407,10 @@ public class FriendListFragment extends Fragment {
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
         private final List<Friend> mValues;
+        private LayoutInflater inflater;
 
         public SimpleItemRecyclerViewAdapter(List<Friend> items) {
+           // this.inflater = LayoutInflater.from()
             mValues = items;
         }
 
@@ -410,21 +421,70 @@ public class FriendListFragment extends Fragment {
             return new ViewHolder(view);
         }
 
+
+
+
+
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
             holder.mItem = mValues.get(position);
             holder.mIdView.setText(mValues.get(position).username);
             holder.mContentView.setText(mValues.get(position).phoneNumber);
             holder.mScoreView.setText(mValues.get(position).score+"");
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
+                public void onClick(final View v) {
+                    LayoutInflater inflater = getActivity().getLayoutInflater();
+                    friend_habitlist_view=inflater.inflate(R.layout.friend_habitlist,null,false);
+
+                    View friendRecycler = friend_habitlist_view.findViewById(R.id.friend_habit);
+                    assert friendRecycler != null;
+                    friendListAdapter=new FriendListAdapter(FriendHabitList.ITEMS,getActivity());
+                    setupFriendRecyclerView((RecyclerView) friendRecycler);
+                    AsyncHttpClient client = new AsyncHttpClient();
+                    RequestParams params = new RequestParams();
+                    params.add("phoneNumber",mValues.get(position).phoneNumber);
+                    client.post("http://lshunran.com:3000/recorder/gethabit", params, new AsyncHttpResponseHandler() {
+                        @Override
+                        public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                            String re = new String(responseBody);
+                            try {
+                                FriendHabitList.ITEMS.clear();
+                                String username=null;
+                                int score = 0;
+                                JSONObject object = new JSONObject(re);
+
+                                JSONArray habitjson = object.getJSONArray("habitList");
+                                for(int i=0;i<habitjson.length();i++){
+                                    JSONObject friend  = habitjson.getJSONObject(i);
+                                    username = friend.getString("name");
+                                    score = friend.getInt("score");
+                                    //Toast.makeText(getActivity(),username+" "+ score,Toast.LENGTH_SHORT).show();
+                                    FriendHabit ffff = new FriendHabit(username,score);
+                                    FriendHabitList.addItem(ffff);
+
+                                }
+                                friendListAdapter.notifyDataSetChanged();
+
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+
+                        }
+
+                        @Override
+                        public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+
+                        }
+                    });
                     //弹出好友习惯列表及相应得分
+
                     builder = new AlertDialog.Builder(getActivity());
                     alert = builder.setIcon(R.drawable.list)
                             .setTitle(holder.mItem.username)
                             .setMessage("habitlist")
-
+                            .setView(friend_habitlist_view)
                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -515,6 +575,59 @@ public class FriendListFragment extends Fragment {
         }
 
         return Arrays.asList(contactsList);
+    }
+
+    public class FriendListAdapter
+            extends RecyclerView.Adapter<FriendListAdapter.ViewHolder> {
+
+        private final List<FriendHabit> mValues;
+        private Context context;
+
+        public FriendListAdapter(List<FriendHabit> items,Context context) {
+            mValues = items;
+            this.context=context;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_list_content, parent, false);
+
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(final ViewHolder holder, int position) {
+            holder.mItem = mValues.get(position);
+            holder.mIdView.setText(mValues.get(position).score+"");
+            holder.mContentView.setText(mValues.get(position).habitName);
+
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return mValues.size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public final View mView;
+            public final TextView mIdView;
+            public final TextView mContentView;
+            public FriendHabit mItem;
+
+            public ViewHolder(View view) {
+                super(view);
+                mView = view;
+                mIdView = (TextView) view.findViewById(R.id.id);
+                mContentView = (TextView) view.findViewById(R.id.content);
+            }
+
+            @Override
+            public String toString() {
+                return super.toString() + " '" + mContentView.getText() + "'";
+            }
+        }
     }
 
 
