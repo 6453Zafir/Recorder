@@ -10,7 +10,7 @@
         android:layout_margin="@dimen/text_margin"
         android:text="friend"
         android:textAppearance="?attr/textAppearanceListItem"
-        android:layout_weight="0.25" />
+        android:layout_weight="0.3" />
 
     <TextView
         android:id="@+id/content"
@@ -19,7 +19,7 @@
         android:layout_margin="@dimen/text_margin"
         android:text="123123121"
         android:textAppearance="?attr/textAppearanceListItem"
-        android:layout_weight="0.45" />
+        android:layout_weight="0.40" />
 
     <ImageView
         android:layout_width="0dp"

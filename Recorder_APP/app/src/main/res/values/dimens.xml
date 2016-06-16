@@ -23,6 +23,7 @@
 
 
 
+
     <dimen name="text_size_header_large">36sp</dimen>
     <dimen name="text_size_header">24sp</dimen>
     <dimen name="margin_medium">8dp</dimen>
@@ -44,4 +45,10 @@
     <dimen name="list_item_parent_background_corner_radius">2dp</dimen>
     <dimen name="standard_material_padding">16dp</dimen>
     <dimen name="standard_text_size">16sp</dimen>
+
+    <!--
+Refer to App Widget Documentation for margin information
+http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
+    -->
+    <dimen name="widget_margin">8dp</dimen>
 </resources>

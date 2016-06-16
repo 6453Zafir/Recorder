@@ -1,6 +1,7 @@
 package com.tongji.android.recorder_app.Fragment;
 
 
+
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -9,12 +10,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.AsyncTask;
+
+import android.Manifest;
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,12 +32,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bignerdranch.expandablerecyclerview.Adapter.ExpandableRecyclerAdapter;
+
+
 import com.colintmiller.simplenosql.NoSQL;
 import com.colintmiller.simplenosql.NoSQLEntity;
 import com.colintmiller.simplenosql.RetrievalCallback;
@@ -39,6 +53,8 @@ import com.tongji.android.recorder_app.Activity.ItemListActivity;
 
 import com.tongji.android.recorder_app.Activity.MainActivity;
 import com.tongji.android.recorder_app.Application.MyApplication;
+import com.tongji.android.recorder_app.Model.Contacts;
+import com.tongji.android.recorder_app.Model.ContactsList;
 import com.tongji.android.recorder_app.Model.Friend;
 import com.tongji.android.recorder_app.Model.FriendList;
 import com.tongji.android.recorder_app.Model.Ingredient;
@@ -76,10 +92,14 @@ public class FriendListFragment extends Fragment {
     private boolean isFriendExist=false;
     private String friendphoneNum;
     private SimpleItemRecyclerViewAdapter adapter;
+
     private RecipeAdapter mAdapter;
     private Recipe contactsList;
     private RecyclerView contactsView;
     private List<Recipe> recipes;
+
+
+    private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
 
     public FriendListFragment() {
         // Required empty public constructor
@@ -112,21 +132,22 @@ public class FriendListFragment extends Fragment {
         }
 
 
+    }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        FriendList.ITEMS.clear();
+        FriendList.ITEM_MAP.clear();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.friend_list_fragment, container, false);
+
         FriendPhoneNum=(EditText)v.findViewById(R.id.friend_number);
         SerachFriendBtn = (Button)v.findViewById(R.id.friend_search);
-        if(friendphoneNum!=null){
-            // call the ifFriendExist function
-            if(true){
-
-            }
-        }
         SerachFriendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -155,13 +176,12 @@ public class FriendListFragment extends Fragment {
 
                                                 }
                                             })
-                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                            .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                                                 @Override
                                                 public void onClick(DialogInterface dialog, int which) {
                                                     AsyncHttpClient client = new AsyncHttpClient();
                                                     RequestParams params = new RequestParams();
-                                                    MyApplication myapp = (MyApplication)getActivity().getApplication();
-                                                    params.add("phoneNumber",myapp.getPhoneNumber());
+                                                    params.add("phoneNumber","13661828533");
                                                     params.add("addPhoneNumber",friendphoneNum);
                                                     client.post("http://lshunran.com:3000/recorder/add", params, new AsyncHttpResponseHandler() {
                                                         @Override
@@ -169,20 +189,21 @@ public class FriendListFragment extends Fragment {
                                                             String re = new String(responseBody);
                                                             try{
                                                                 JSONObject object = new JSONObject(re);
-                                                                int errCode =object.getInt("errCode");
+                                                                int errCode = object.getInt("errCode");
                                                                 if(errCode == 0 ){
-                                                                    int score = object.getInt("score");
-                                                                    String username = object.getString("username");
-                                                                    Friend mynewfriend = new Friend(friendphoneNum,username,score);
-                                                                    FriendList.addItem(mynewfriend);
+                                                                    String addedusername = object.getString("username");
+                                                                    String addedphoneNum = object.getString("phoneNumber");
+                                                                    int addedscore = object.getInt("score");
+                                                                    //新建要添加好友的对象
+                                                                    Friend mynewfriend = new Friend(addedphoneNum,addedusername,addedscore);
                                                                     NoSQLEntity<Friend>entity=new NoSQLEntity<Friend>("friend",friendphoneNum+"");
                                                                     entity.setData(mynewfriend);
                                                                     NoSQL.with(getActivity()).using(Friend.class).save(entity);
-//
+
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.success)
                                                                             .setTitle("Congratulations：")
-                                                                            .setMessage("You have added the "+friendphoneNum+" as your friend!Now you can check his/her habit list")
+                                                                            .setMessage("You have added the "+friendphoneNum+" as your friend! Now you can check his/her habit list")
                                                                             .setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
                                                                                 @Override
                                                                                 public void onClick(DialogInterface dialog, int which) {
@@ -192,10 +213,6 @@ public class FriendListFragment extends Fragment {
                                                                             .setPositiveButton("Check Now", new DialogInterface.OnClickListener() {
                                                                                 @Override
                                                                                 public void onClick(DialogInterface dialog, int which) {
-                                                                                        adapter.notifyDataSetChanged();
-                                                                                    Intent intent = new Intent(RankingListFragment.RELOAD_RANKING);
-
-                                                                                    getActivity().sendBroadcast(intent);
 
                                                                                 }
                                                                             }).create();
@@ -204,7 +221,7 @@ public class FriendListFragment extends Fragment {
                                                                     builder = new AlertDialog.Builder(getActivity());
                                                                     alert = builder.setIcon(R.drawable.error)
                                                                             .setTitle("Sorry：")
-                                                                            .setMessage("You have added the "+friendphoneNum+" as friend")
+                                                                            .setMessage("You have already added "+friendphoneNum)
 
                                                                             .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                                                                                 @Override
@@ -270,6 +287,7 @@ public class FriendListFragment extends Fragment {
             }
         });
 
+
         View recyclerView = v.findViewById(R.id.item_friend_list);
         assert recyclerView != null;
         adapter=new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
@@ -283,9 +301,43 @@ public class FriendListFragment extends Fragment {
         getActivity().registerReceiver(broadcastReceiver, filter);
         IntentFilter filter1 = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
         getActivity().registerReceiver(broadcastReceiver1,filter1);
+
         return v;
     }
+
+    //--------------------------------------------------------------------------------------------------------------------
+
+
+    public void getPermissionToReadUserContacts() {
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            if (shouldShowRequestPermissionRationale(
+                    Manifest.permission.READ_CONTACTS)) {
+            }
+            requestPermissions(new String[]{Manifest.permission.READ_CONTACTS},
+                    READ_CONTACTS_PERMISSIONS_REQUEST);
+        }
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String permissions[],
+                                           @NonNull int[] grantResults) {
+        // Make sure it's our original READ_CONTACTS request
+        if (requestCode == READ_CONTACTS_PERMISSIONS_REQUEST) {
+            if (grantResults.length == 1 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(getActivity(), "Read Contacts permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getActivity(), "Read Contacts permission denied", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
+       // adapter = new SimpleItemRecyclerViewAdapter(FriendList.ITEMS);
         recyclerView.setAdapter(adapter);
     }
 
@@ -368,10 +420,28 @@ public class FriendListFragment extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).phoneNumber);
-            holder.mContentView.setText(mValues.get(position).username);
+            holder.mIdView.setText(mValues.get(position).username);
+            holder.mContentView.setText(mValues.get(position).phoneNumber);
             holder.mScoreView.setText(mValues.get(position).score+"");
-//
+            holder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //弹出好友习惯列表及相应得分
+                    builder = new AlertDialog.Builder(getActivity());
+                    alert = builder.setIcon(R.drawable.list)
+                            .setTitle(holder.mItem.username)
+                            .setMessage("habitlist")
+
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).create();
+                    alert.show();
+                    }
+
+            });
 
 
         }
@@ -401,6 +471,10 @@ public class FriendListFragment extends Fragment {
                 return super.toString() + " '" + mContentView.getText() + "'";
             }
         }
+
+
+
+
 
     }
 

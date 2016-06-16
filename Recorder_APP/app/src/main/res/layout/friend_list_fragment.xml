@@ -29,45 +29,35 @@
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:background="@color/lightBackground">
-            <FrameLayout
+
+            <EditText
+                android:id="@+id/friend_number"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.9">
-                <EditText
-                    android:id="@+id/friend_number"
-                    android:layout_width="match_parent"
-                    android:layout_height="30dp"
-                    android:inputType="numberSigned"
-                    android:ems="10"
+                android:layout_height="30dp"
+                android:inputType="numberSigned"
+                android:ems="10"
+                android:hint="phone number to search"
+                android:textColor="#7b7b7b"
+                android:textColorHighlight="#a7a7a7"
+                android:background="@drawable/search_radious"
+                android:paddingLeft="10dp"
+                android:textSize="15sp"
+                android:layout_weight="0.91" />
 
-                    android:hint="phone number to search"
-                    android:textColor="#7b7b7b"
-                    android:textColorHighlight="#a7a7a7"
-                    android:background="@drawable/search_radious"
-                    android:paddingLeft="10dp"
-                    android:textSize="15sp" />
-            </FrameLayout>
-
-
-            <FrameLayout
+            <Button
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="0.1">
-                <Button
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:id="@+id/friend_search"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center"
-                    android:textSize="15sp"
-                    android:background="@drawable/ic_search_black_24dp" />
-            </FrameLayout>
-
-
+                android:layout_height="30dp"
+                android:id="@+id/friend_search"
+                android:textSize="15sp"
+                android:background="@drawable/search"
+                android:layout_weight="0.09" />
 
         </LinearLayout>
 
+
+
         <LinearLayout
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <android.support.v7.widget.RecyclerView
@@ -78,15 +68,16 @@
 
 
         <LinearLayout
+
             android:orientation="horizontal"
             android:id="@+id/frameLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="fill_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             android:weightSum="1"
             android:baselineAligned="false">
 
-        <include layout="@layout/item_friend_list"
+            <include layout="@layout/item_friend_list"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent" />
         </LinearLayout>
