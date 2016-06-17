@@ -43,14 +43,12 @@ public class RankingListFragment extends Fragment {
 
     private boolean mTwoPane;
     private SimpleItemRecyclerViewAdapter adapter;
-   private TextView firstName ;
-   private         TextView firstScore;
-   private TextView secondName;
-   private TextView secondScore;
-   private TextView thirdName ;
-   private         TextView thirdScore;
-
-
+    private TextView firstName;
+    private TextView firstScore;
+    private TextView secondName;
+    private TextView secondScore;
+    private TextView thirdName;
+    private TextView thirdScore;
 
 
     public RankingListFragment() {
@@ -90,7 +88,6 @@ public class RankingListFragment extends Fragment {
         // Inflate the layout for this fragment
 
 
-
         View v = inflater.inflate(R.layout.ranking_list_fragment, container, false);
         View recyclerView = v.findViewById(R.id.ranking_list);
 
@@ -118,27 +115,24 @@ public class RankingListFragment extends Fragment {
         IntentFilter filter = new IntentFilter(RELOAD_RANKING);
         getActivity().registerReceiver(broadcastReceiver, filter);
         IntentFilter filter1 = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
-        getActivity().registerReceiver(broadcastReceiver1,filter1);
+        getActivity().registerReceiver(broadcastReceiver1, filter1);
         return v;
     }
 
     private void BuildUpRanking() {
-        Collections.sort(com.tongji.android.recorder_app.Model.FriendList.ITEMS,new FriendSort());
+        Collections.sort(com.tongji.android.recorder_app.Model.FriendList.ITEMS, new FriendSort());
         FriendList.ITEMS.clear();
-        for (int i = 0; i< com.tongji.android.recorder_app.Model.FriendList.ITEMS.size(); i++){
-            if (i == 0){
+        for (int i = 0; i < com.tongji.android.recorder_app.Model.FriendList.ITEMS.size(); i++) {
+            if (i == 0) {
                 firstName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).username);
-                firstScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).score+"");
-            }
-            else if(i == 1){
+                firstScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(0).score + "");
+            } else if (i == 1) {
                 secondName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).username);
-                secondScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).score+"");
-            }
-            else if (i == 2){
+                secondScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(1).score + "");
+            } else if (i == 2) {
                 thirdName.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).username);
-                thirdScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).score+"");
-            }
-            else {
+                thirdScore.setText(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(2).score + "");
+            } else {
 
                 FriendList.addItem(com.tongji.android.recorder_app.Model.FriendList.ITEMS.get(i));
             }
@@ -165,9 +159,11 @@ public class RankingListFragment extends Fragment {
             //BuildUpRanking();
         }
     };
+
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
         recyclerView.setAdapter(adapter);
     }
+
     public class SimpleItemRecyclerViewAdapter
             extends RecyclerView.Adapter<SimpleItemRecyclerViewAdapter.ViewHolder> {
 
@@ -219,6 +215,11 @@ public class RankingListFragment extends Fragment {
             }
         }
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
 
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
 
 }

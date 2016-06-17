@@ -4,14 +4,15 @@
     android:layout_height="match_parent"
     android:paddingLeft="5dp"
     android:paddingRight="5dp"
-    tools:context="com.tongji.android.recorder_app.Fragment.Punchcard">
+    tools:context="com.tongji.android.recorder_app.Fragment.Punchcard"
+    android:background="@color/lightBackground">
 
     <!-- TODO: Update blank fragment layout -->
 
 
     <GridView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:numColumns="auto_fit"
         android:id="@+id/punch_card_main_habit_gridView"
         android:layout_marginTop="3dp"

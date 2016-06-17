@@ -172,11 +172,11 @@ public class Punchcard extends Fragment {
                 final DialogGridViewAdapter dialogGridViewAdapter = new DialogGridViewAdapter(getActivity());
                 gridView.setAdapter(dialogGridViewAdapter);
 
-                final TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
-
-                if (SystemHabitList.ITEMS.size() == 0) {
-                    textView.setBackgroundColor(Color.parseColor("#ee0000"));
-                }
+//                final TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
+//
+//                if (SystemHabitList.ITEMS.size() == 0) {
+//                    textView.setBackgroundColor(Color.parseColor("#ee0000"));
+//                }
 
 
                 final Button button = (Button) dialogView.findViewById(R.id.add_custom_dialog_button);
@@ -482,6 +482,13 @@ public class Punchcard extends Fragment {
         IntentFilter filter = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
         getActivity().registerReceiver(broadcastReceiver, filter);
         return view;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().unregisterReceiver(broadcastReceiver);
     }
 
     BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
@@ -806,8 +813,8 @@ public class Punchcard extends Fragment {
                     .cornerRadius(dimen(R.dimen.mb_corner_radius_1))
                     .width(dimen(R.dimen.mb_width_100))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.colorAccent))
-                    .colorPressed(color(R.color.mb_blue_dark))
+                    .color(color(R.color.DarkGreenButton))
+                    .colorPressed(color(R.color.DarkGreenButtonPressed))
                     .text(getString(R.string.check));
             btnMorph.morph(square);
         }
@@ -817,7 +824,7 @@ public class Punchcard extends Fragment {
                     .cornerRadius(dimen(R.dimen.mb_height_56))
                     .width(dimen(R.dimen.mb_height_56))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_green))
+                    .color(color(R.color.colorAccent))
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
@@ -829,7 +836,7 @@ public class Punchcard extends Fragment {
                     .cornerRadius(dimen(R.dimen.mb_height_56))
                     .width(dimen(R.dimen.mb_height_56))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_green))
+                    .color(color(R.color.colorAccent))
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
