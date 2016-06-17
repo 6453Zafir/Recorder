@@ -98,6 +98,7 @@ public class FriendListFragment extends Fragment {
     private List<Recipe> recipes;
 
 
+
     private static final int READ_CONTACTS_PERMISSIONS_REQUEST = 1;
 
     public FriendListFragment() {
@@ -133,12 +134,7 @@ public class FriendListFragment extends Fragment {
 
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        FriendList.ITEMS.clear();
-        FriendList.ITEM_MAP.clear();
-    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -347,7 +343,7 @@ public class FriendListFragment extends Fragment {
             // TODO Auto-generated method stub
 
             adapter.notifyDataSetChanged();
-            //BuildUpRanking();
+            //·BuildUpRanking();
         }
     };
     BroadcastReceiver broadcastReceiver1 = new BroadcastReceiver() {

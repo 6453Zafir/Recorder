@@ -30,27 +30,40 @@
             android:paddingRight="16dp"
             android:background="@color/lightBackground">
 
-            <EditText
-                android:id="@+id/friend_number"
+            <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:inputType="numberSigned"
-                android:ems="10"
-                android:hint="phone number to search"
-                android:textColor="#7b7b7b"
-                android:textColorHighlight="#a7a7a7"
-                android:background="@drawable/search_radious"
-                android:paddingLeft="10dp"
-                android:textSize="15sp"
-                android:layout_weight="0.91" />
+                android:layout_height="match_parent"
+                android:layout_weight="0.9">
+                <EditText
+                    android:id="@+id/friend_number"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:inputType="numberSigned"
+                    android:ems="10"
+                    android:hint="phone number to search"
+                    android:textColor="#7b7b7b"
+                    android:textColorHighlight="#a7a7a7"
+                    android:background="@drawable/search_radious"
+                    android:paddingLeft="10dp"
+                    android:textSize="15sp"
+                    />
+            </FrameLayout>
 
-            <Button
+
+            <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:id="@+id/friend_search"
-                android:textSize="15sp"
-                android:background="@drawable/search"
-                android:layout_weight="0.09" />
+                android:layout_height="match_parent"
+                android:layout_weight="0.1">
+                <Button
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:id="@+id/friend_search"
+                    android:textSize="15sp"
+                    android:background="@drawable/ic_search_black_24dp"
+                    android:layout_gravity="center_horizontal"
+                    />
+            </FrameLayout>
+
 
         </LinearLayout>
 
