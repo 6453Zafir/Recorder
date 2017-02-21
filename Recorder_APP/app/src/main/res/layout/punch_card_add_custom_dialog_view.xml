@@ -5,7 +5,7 @@
     android:layout_width="256dp"
     android:layout_height="128dp"
     android:gravity="right"
-    android:background="#eeeeee"
+    android:background="@drawable/tab_border"
     >
 
     <TextView
@@ -13,9 +13,9 @@
         android:layout_height="wrap_content"
         android:id="@+id/dialog_view_TextView"
         android:gravity="center"
-        android:textSize="20dp"
+        android:textSize="20sp"
         android:text="fff"
-        />
+        android:textColor="@color/colorPrimaryDark" />
 
 
     <CheckBox
@@ -24,7 +24,7 @@
         android:id="@+id/dialog_view_checkBox"
         android:layout_below="@+id/dialog_view_TextView"
 
-        />
+        android:background="@drawable/abc_btn_check_to_on_mtrl_000" />
 
 
 

@@ -34,16 +34,16 @@ public class SystemHabitList {
     }
 
     public static void initList() {
-        addItem(new SystemDefaultHabit(0+"","Early Bed",0,3,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Early Up",0,3,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Build Up Body",0,4,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Study",0,4,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Smoke",0,3,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Drunk",0,3,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Play Game",0,3,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Breakfast",0,1,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Drink",0,2,"feature"));
-        addItem(new SystemDefaultHabit(0+"","Eat Word",0,2,"feature"));
+        addItem(new SystemDefaultHabit(0+"","Early Sleep",0,0,"22:00"));
+        addItem(new SystemDefaultHabit(0+"","Early Get Up",0,0,"7:00"));
+        addItem(new SystemDefaultHabit(0+"","Build Up Body",0,2,""));
+        addItem(new SystemDefaultHabit(0+"","Study",0,3,"180 minutes"));
+        addItem(new SystemDefaultHabit(0+"","Fitting",0,3,"120 minutes"));
+        addItem(new SystemDefaultHabit(0+"","No Drunk",0,2,""));
+        addItem(new SystemDefaultHabit(0+"","No Game",0,2,""));
+        addItem(new SystemDefaultHabit(0+"","Breakfast",0,0,"8:00"));
+        addItem(new SystemDefaultHabit(0+"","Drink",0,1,"8 times"));
+        addItem(new SystemDefaultHabit(0+"","Recite Word",0,2,""));
         flag = true;
     }
 }

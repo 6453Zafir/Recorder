@@ -4,9 +4,11 @@ import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -91,6 +93,7 @@ public class Punchcard extends Fragment {
     private int temphourOfDay;
     private int tempminute;
     private  MyApplication myapp;
+    PuncuGridViewAdapter puncuGridViewAdapter;
 
 
 
@@ -151,7 +154,7 @@ public class Punchcard extends Fragment {
         View view = inflater.inflate(R.layout.punch_card_fragment, container, false);
 
         GridView gridView = (GridView) view.findViewById(R.id.punch_card_main_habit_gridView);
-        final PuncuGridViewAdapter puncuGridViewAdapter = new PuncuGridViewAdapter(getActivity());
+        puncuGridViewAdapter = new PuncuGridViewAdapter(getActivity());
 
         gridView.setAdapter(puncuGridViewAdapter);
 
@@ -169,11 +172,11 @@ public class Punchcard extends Fragment {
                 final DialogGridViewAdapter dialogGridViewAdapter = new DialogGridViewAdapter(getActivity());
                 gridView.setAdapter(dialogGridViewAdapter);
 
-                final TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
-
-                if (SystemHabitList.ITEMS.size() == 0) {
-                    textView.setBackgroundColor(Color.parseColor("#ee0000"));
-                }
+//                final TextView textView = (TextView) dialogView.findViewById(R.id.add_custom_dialog_textView);
+//
+//                if (SystemHabitList.ITEMS.size() == 0) {
+//                    textView.setBackgroundColor(Color.parseColor("#ee0000"));
+//                }
 
 
                 final Button button = (Button) dialogView.findViewById(R.id.add_custom_dialog_button);
@@ -397,6 +400,7 @@ public class Punchcard extends Fragment {
                                 params.add("catalog",temp.get(i).type+"");
                                 params.add("feature",temp.get(i).feature);
                                 params.add("name",temp.get(i).habitName);
+                                final Habit temphabit =temp.get(i);
                                 final int finalI = i;
                                 client.post("http://lshunran.com:3000/recorder/addhabit", params, new AsyncHttpResponseHandler() {
                                             @Override
@@ -406,17 +410,21 @@ public class Punchcard extends Fragment {
                                                     JSONObject object = new JSONObject(re);
                                                     int errCode = object.getInt("errCode");
                                                     if (errCode == 0) {
-                                                        temp.get(finalI).id = object.getString("id");
-                                                        HabitList.addItem(temp.get(finalI));
-                                                        DateItem dateItem = new DateItem(temp.get(finalI).type,temp.get(finalI).id);
+                                                        temphabit.id = object.getString("id");
+                                                        HabitList.addItem(temphabit);
+                                                        DateItem dateItem = new DateItem(temphabit.type,temphabit.id);
                                                         DateList.addItem(dateItem.type,dateItem);
-                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",temp.get(finalI).id);
-                                                        entity.setData(temp.get(finalI));
+                                                        NoSQLEntity<Habit> entity = new NoSQLEntity<Habit>("habit",temphabit.id);
+                                                        entity.setData(temphabit);
                                                         NoSQL.with(getActivity()).using(Habit.class).save(entity);
                                                         NoSQLEntity<DateItem> entity2 = new NoSQLEntity<DateItem>("date",dateItem.type+"+"+dateItem.id);
                                                         entity2.setData(dateItem);
                                                         NoSQL.with(getActivity()).using(DateItem.class).save(entity2);
+                                                        dialogGridViewAdapter.notifyDataSetChanged();
+                                                        puncuGridViewAdapter.notifyDataSetChanged();
+                                                        Intent intent = new Intent(MainActivity.RELOAD_DATA_FRAGMENT);
 
+                                                        getActivity().sendBroadcast(intent);
                                                     }
                                                 } catch (JSONException e) {
                                                     e.printStackTrace();
@@ -471,9 +479,27 @@ public class Punchcard extends Fragment {
 
             }
         });
-
+        IntentFilter filter = new IntentFilter(MainActivity.RELOAD_DATA_FRAGMENT);
+        getActivity().registerReceiver(broadcastReceiver, filter);
         return view;
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().unregisterReceiver(broadcastReceiver);
+    }
+
+    BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // TODO Auto-generated method stub
+
+            puncuGridViewAdapter.notifyDataSetChanged();
+        }
+    };
     private void setAlarm(){
 
         Calendar calNow = Calendar.getInstance(Locale.getDefault());
@@ -564,7 +590,9 @@ public class Punchcard extends Fragment {
         }
     }
 
+    public void modifyHabit(){
 
+    }
 
     //打卡界面的gridview的适配器
     public class PuncuGridViewAdapter extends BaseAdapter {
@@ -598,6 +626,153 @@ public class Punchcard extends Fragment {
         public View getView(final int position, View convertView, ViewGroup parent) {
 //             mMorphCounter1[position] = 1;
             convertView = inflater.inflate(R.layout.punch_card_main_habit_view,null);
+            convertView.setOnClickListener(new View.OnClickListener() {
+                                               @Override
+                                               public void onClick(View view) {
+
+                                                   final AlertDialog.Builder buttonBuilder = new AlertDialog.Builder(getActivity());
+
+                                                   final View addOwnHabitView = inflater.inflate(R.layout.add_user_own_habit, null);
+                                                   final TextView hintText = (TextView) addOwnHabitView.findViewById(R.id.hint_text);
+                                                   final EditText durationInput = (EditText) addOwnHabitView.findViewById(R.id.duration_input);
+                                                   final EditText degreeInput = (EditText) addOwnHabitView.findViewById(R.id.degree_input);
+                                                   final Button timePicker = (Button) addOwnHabitView.findViewById(R.id.time_picker);
+                                                   final EditText editText = (EditText) addOwnHabitView.findViewById(R.id.add_user_own_habit_EditText);
+                                                   final Spinner spinner = (Spinner)
+                                                           addOwnHabitView.findViewById(R.id.add_user_own_habit_spinner);
+
+                                                   ArrayAdapter<CharSequence> arrayAdapter =
+                                                           ArrayAdapter.createFromResource(
+                                                                   getActivity(), R.array.select_user_habit_type, android.R.layout.simple_spinner_item
+                                                           );
+                                                    editText.setText(HabitList.ITEMS.get(position).habitName);
+                                                   editText.setFocusable(false);
+                                                   arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                                                   Habit h = HabitList.ITEMS.get(position);
+
+                                                   spinner.setAdapter(arrayAdapter);
+
+
+                                                   switch (h.type) {
+                                                       case 0:
+                                                           spinner.setSelection(0,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please choose time");
+                                                           timePicker.setVisibility(View.VISIBLE);
+                                                           timePicker.setOnClickListener(new View.OnClickListener() {
+                                                               @Override
+                                                               public void onClick(View v) {
+                                                                   final Calendar c = Calendar.getInstance();
+                                                                   int mHour = c.get(Calendar.HOUR_OF_DAY);
+                                                                   int mMinute = c.get(Calendar.MINUTE);
+
+                                                                   // Launch Time Picker Dialog
+                                                                   TimePickerDialog timePickerDialog = new TimePickerDialog(getActivity(),
+                                                                           new TimePickerDialog.OnTimeSetListener() {
+
+                                                                               @Override
+                                                                               public void onTimeSet(TimePicker view, int hourOfDay,
+                                                                                                     int minute) {
+                                                                                   temphourOfDay = hourOfDay;
+                                                                                   tempminute = minute;
+                                                                                   daytime = hourOfDay + ":" + minute;
+                                                                                   //txtTime.setText(hourOfDay + ":" + minute);
+                                                                               }
+                                                                           }, mHour, mMinute, false);
+                                                                   timePickerDialog.show();
+
+                                                               }
+                                                           });
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           break;
+                                                       case 1:
+                                                           spinner.setSelection(1,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please input times");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.VISIBLE);
+                                                           degreeInput.setText(h.feature);
+                                                           break;
+                                                       case 2:
+                                                           spinner.setSelection(2,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("It'a common habit");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.GONE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           break;
+                                                       case 3:
+                                                           spinner.setSelection(3,true);
+                                                           spinner.setClickable(false);
+                                                           hintText.setText("Please input duration time");
+                                                           timePicker.setVisibility(View.GONE);
+                                                           durationInput.setVisibility(View.VISIBLE);
+                                                           degreeInput.setVisibility(View.GONE);
+                                                           durationInput.setText(h.feature);
+                                                           break;
+                                                   }
+                                                   ;
+
+
+                                                   buttonBuilder.setView(addOwnHabitView).setPositiveButton("Modify", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+
+                                                           CharSequence charSequence = editText.getText();
+
+                                                           if (charSequence.toString().trim().equals("")) {
+                                                               AlertDialog.Builder ifNullBuilder = new AlertDialog.Builder(getActivity());
+                                                               ifNullBuilder.setTitle("You must enter habit name")
+                                                                       .setNegativeButton("OK", new DialogInterface.OnClickListener() {
+                                                                           @Override
+                                                                           public void onClick(DialogInterface dialog, int which) {
+                                                                               dialog.dismiss();
+                                                                           }
+                                                                       }).create().show();
+
+                                                           } else {
+
+                                                               switch (HabitList.ITEMS.get(position).type) {
+                                                                   case 0:
+                                                                       HabitList.ITEMS.get(position).feature = daytime;
+                                                                       setAlarm();
+                                                                       break;
+                                                                   case 1:
+                                                                       HabitList.ITEMS.get(position).feature = degreeInput.getText().toString();
+                                                                       break;
+                                                                   case 2:
+                                                                       HabitList.ITEMS.get(position).feature =  "";
+                                                                       break;
+                                                                   case 3:
+                                                                       HabitList.ITEMS.get(position).feature =  durationInput.getText().toString();
+                                                                       break;
+                                                                   default:
+                                                                       break;
+                                                               }
+
+
+                                                                notifyDataSetChanged();
+
+                                                               dialog.dismiss();
+                                                           }
+                                                       }
+                                                   }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(DialogInterface dialog, int which) {
+                                                           dialog.dismiss();
+                                                       }
+                                                   });
+
+
+                                                   buttonBuilder.create().show();
+                                               }
+                                           });
+
+
+
+
             Habit currentHabit = HabitList.ITEMS.get(position);
             type=currentHabit.type;
             id = currentHabit.id;
@@ -635,11 +810,11 @@ public class Punchcard extends Fragment {
         private void morphToSquare(final IndeterminateProgressButton btnMorph, int duration) {
             MorphingButton.Params square = MorphingButton.Params.create()
                     .duration(duration)
-                    .cornerRadius(dimen(R.dimen.mb_corner_radius_2))
+                    .cornerRadius(dimen(R.dimen.mb_corner_radius_1))
                     .width(dimen(R.dimen.mb_width_100))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_blue))
-                    .colorPressed(color(R.color.mb_blue_dark))
+                    .color(color(R.color.DarkGreenButton))
+                    .colorPressed(color(R.color.DarkGreenButtonPressed))
                     .text(getString(R.string.check));
             btnMorph.morph(square);
         }
@@ -649,7 +824,7 @@ public class Punchcard extends Fragment {
                     .cornerRadius(dimen(R.dimen.mb_height_56))
                     .width(dimen(R.dimen.mb_height_56))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_green))
+                    .color(color(R.color.colorAccent))
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);
@@ -661,7 +836,7 @@ public class Punchcard extends Fragment {
                     .cornerRadius(dimen(R.dimen.mb_height_56))
                     .width(dimen(R.dimen.mb_height_56))
                     .height(dimen(R.dimen.mb_height_56))
-                    .color(color(R.color.mb_green))
+                    .color(color(R.color.colorAccent))
                     .colorPressed(color(R.color.mb_green_dark))
                     .icon(R.drawable.ic_check_white_24dp);
             btnMorph.morph(circle);

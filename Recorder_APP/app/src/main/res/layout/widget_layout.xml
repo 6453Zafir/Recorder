@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:text="Go to check when finish"
         android:gravity="center"
-        android:id="@+id/btn"/>
+        android:id="@+id/btn"
+        android:background="@drawable/buttton_radious" />
     <GridView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -5,15 +5,15 @@
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Choose Your Habit"
+        android:layout_height="50dp"
+        android:text="Choose A New Habit"
         android:gravity="center"
         android:id="@+id/add_custom_dialog_imageView"
         android:textAllCaps="false"
-        android:background="#00aaff"
+        android:background="@color/colorPrimary"
         android:textColor="#ffffff"
 
-        />
+        android:textSize="22sp" />
 
     <GridView
         android:layout_width="match_parent"
@@ -23,28 +23,20 @@
         android:horizontalSpacing="1dp"
         android:id="@+id/add_custom_dialog_gridView"
         android:layout_below="@+id/add_custom_dialog_imageView"
-        android:background="#acacac"
-        />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#ffffff"
-        android:id="@+id/add_custom_dialog_textView"
-        android:gravity="center"
-        android:layout_below="@+id/add_custom_dialog_gridView"
-        android:text="Try to add Your own Habit"
-        android:textAllCaps="false"
-        />
+        android:background="#fcfcfc"
+        android:padding="10dp" />
 
 
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Add Own Habit"
-        android:layout_below="@+id/add_custom_dialog_textView"
+        android:text="Add Custom Habit"
         android:id="@+id/add_custom_dialog_button"
         android:textAllCaps="false"
-        />
+        android:background="@drawable/tab_border"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_below="@+id/add_custom_dialog_gridView"
+        android:textSize="18sp" />
 
 </RelativeLayout>

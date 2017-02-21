@@ -1,35 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:padding="8dp"
+    android:padding="16dp"
     android:layout_height="match_parent">
-    
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:id="@+id/add_user_own_habit_imageView"
-        />
-    
-    <EditText
+
+    <TextView
+        android:id="@+id/textView2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:text="Habit Name:"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp" />
+
+    <EditText
         android:id="@+id/add_user_own_habit_EditText"
-        android:hint="Please Enter Your Habit Name"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_gravity="center_vertical">
         <TextView
-            android:layout_gravity="center"
+            android:layout_gravity="center_vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.2"
-            android:text="Habit Type"/>
+            android:layout_weight="0.5"
+            android:text="Habit type:"
+            android:textSize="18sp" />
         <Spinner
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="0.8"
+            android:layout_height="50dp"
+            android:layout_weight="0.5"
             android:id="@+id/add_user_own_habit_spinner"
             />
     </LinearLayout>
@@ -45,27 +49,37 @@
             android:id="@+id/hint_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Please choose:"/>
+            android:text="Please choose:"
+            android:textSize="18sp"
+            android:layout_margin="0dp"
+            android:layout_marginTop="10dp" />
         <Button
             android:id="@+id/time_picker"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:text="alert time"/>
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:drawableLeft="@drawable/ic_alarm_black_24dp"
+            android:text="alert time"
+            android:paddingLeft="120dp"
+            android:paddingRight="95dp"
+            android:background="@drawable/buttton_radious"
+            android:layout_marginTop="10dp" />
         <EditText
             android:id="@+id/duration_input"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Duration time (minutes)"/>
+            android:hint="Duration time (minutes)"
+            android:layout_marginTop="10dp" />
 
         <EditText
             android:id="@+id/degree_input"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="how many times ?"/>
+            android:hint="how many times ?"
+            android:layout_marginTop="10dp" />
     </LinearLayout>
 
 
-    
+
 
 
 

@@ -300,6 +300,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 NoSQL.with(LoginActivity.this).using(Friend.class).save(newfriend);
                             }
                             JSONArray habitjson = object.getJSONArray("HabitList");
+
                             for(int i =0;i<habitjson.length();i++){
                                 JSONObject habit = habitjson.getJSONObject(i);
                                 String habitId = habit.getString("habitId");
@@ -309,9 +310,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 int score = habit.getInt("score");
                                 Habit h= new Habit(habitId,habitname,score,catalog,feature);
 
-
+                                Calendar c =  Calendar.getInstance(Locale.getDefault());
                                 DateItem dateitem = new DateItem(h.type,h.id);
-
+                                int now = c.getTime().getDate();
                                 if(!habit.getString("date").equals("null")){
                                     JSONArray datejson = habit.getJSONArray("date");
                                     for(int j = 0;j<datejson.length();j++){
@@ -321,12 +322,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                         int year = Integer.parseInt(temp[0]);
                                         int month =  Integer.parseInt(temp[1]);
                                         int day =  Integer.parseInt(temp[2]);
-                                        Calendar c =  Calendar.getInstance(Locale.getDefault());
-
 
                                         c.set(year,month,day);
                                         dateitem.addDate(c.getTime());
-                                        if(c.getTime().getDate() == day){    //待完善
+                                 //       Toast.makeText(LoginActivity.this,now+" "+day,Toast.LENGTH_SHORT).show();
+                                        if(now == day){    //待完善
                                             h.isChecked=true;
 
                                         }

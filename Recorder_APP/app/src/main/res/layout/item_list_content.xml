@@ -13,13 +13,26 @@
         android:layout_weight="0.7"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="grink" />
+    <ImageView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView"
+        android:src="@drawable/score"
+        android:scaleType="fitCenter"
+        android:layout_weight="0.15"
+        android:paddingLeft="9dp"
+        android:paddingTop="9dp"
+        android:paddingRight="0dp"
+        android:paddingBottom="9dp" />
     <TextView
         android:id="@+id/id"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.3"
         android:layout_margin="@dimen/text_margin"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:text="weqwe" />
 
 </LinearLayout>
